@@ -127,8 +127,8 @@
     },
     "model": {
       "id": "Model ID",
-      "recipe": "レシピ",
-      "data": "データ"
+      "recipe": "Recipe",
+      "data": "Data"
     },
     "data":{
       "id": "Deta ID",

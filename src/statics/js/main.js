@@ -688,6 +688,7 @@ window.onload = function() {
       changeMenu: function(menu){
         this.setRecipeFields();
         this.setDataFields();
+        this.setModelFields();
         this.selectedMenu = menu;
       },
       changeLang: function(lang){

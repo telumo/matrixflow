@@ -380,7 +380,7 @@ window.onload = function() {
           }
         };
 
-        const target_node =  {
+        const targetNode =  {
           data: {
             id: nodeId,
             name: "*",
@@ -394,7 +394,7 @@ window.onload = function() {
           position: {x: p.x + 20, y: p.y + 50}
         };
 
-        graph.add(target_node)
+        graph.add(targetNode)
 
         graph.nodes().on("free", (e)=>{
           const connectPoint = e.target;
@@ -967,14 +967,14 @@ window.onload = function() {
 
       this.ws.onopen = () => {
         console.log("ws open.");
-        const recipes_req = {"action": "getRecipeList"};
-        this.sendMessage(recipes_req);
+        const recipesReq = {"action": "getRecipeList"};
+        this.sendMessage(recipesReq);
 
-        const data_req = {"action": "getDataList"};
-        this.sendMessage(data_req);
+        const dataReq = {"action": "getDataList"};
+        this.sendMessage(dataReq);
 
-        const model_req = {"action": "getModelList"};
-        this.sendMessage(model_req);
+        const modelReq = {"action": "getModelList"};
+        this.sendMessage(modelReq);
       };
       this.ws.onclose = function(e){
         console.log("we close.");
@@ -1030,8 +1030,8 @@ window.onload = function() {
             });
             this.recipes = recipes;
           } else if (res["action"] == "addRecipe"){
-            const recipes_req = {"action": "getRecipeList"};
-            this.sendMessage(recipes_req);
+            const recipesReq = {"action": "getRecipeList"};
+            this.sendMessage(recipesReq);
             this.initNewRecipe()
             this.buildGraph(this.newRecipe, "-new");
 
@@ -1045,8 +1045,8 @@ window.onload = function() {
                   data: {}
                 }
               );
-            const model_req = {"action": "getModelList"};
-            this.sendMessage(model_req);
+            const modelReq = {"action": "getModelList"};
+            this.sendMessage(modelReq);
           }else if (res["action"] == "deleteModel") {
             const deleteId = this.getTargetIndex(this.models, res.modelId);
             this.$delete(this.models, deleteId);
@@ -1085,8 +1085,8 @@ window.onload = function() {
             this.newData.name = "";
             this.newData.description = "";
             this.uploadFile = null;
-            const data_req = {"action": "getDataList"};
-            this.sendMessage(data_req);
+            const dataReq = {"action": "getDataList"};
+            this.sendMessage(dataReq);
 
           } else {
             var loadedSize = res["loadedSize"]

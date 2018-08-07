@@ -26,6 +26,7 @@ class CNN(Model):
         self.data_dir = data_dir
         self.rma = RecipeManager()
         self.ima = ImageManager()
+        self.recipe_id = recipe_id
         self.recipe = self.rma.load_recipe(recipe_path=recipe_id)
         self.methods = dict(inspect.getmembers(self, inspect.ismethod))
         self.edge_dict = defaultdict(list)
@@ -128,6 +129,8 @@ class CNN(Model):
 
                 if model_info:
                     print("save model info")
+                    model_info["dataId"] = data_path
+                    model_info["recipeId"] = self.recipe_id 
                     model_info["train_config"] = config
                     r = put_model_info(model_info, self.id)
                     print(r)

@@ -200,15 +200,11 @@ def get_model_list():
                         chartData[name]["loss"].append(v.simple_value)
 
         create_time = get_create_time(j)
-        model = {
-            "id": id,
-            "name": body.get("name", ""),
-            "description": body.get("description", ""),
-            "chartData": chartData,
-            "update_time": update_time,
-            "create_time": create_time
-        }
-        models.append(model)
+        body["id"] = id
+        body["chartData"] = chartData
+        body["update_time"] = update_time
+        body["create_time"] = create_time
+        models.append(body)
     res = {
             "status": "success",
             "data_type": "list",

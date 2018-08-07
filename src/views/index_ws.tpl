@@ -577,6 +577,20 @@
               ${row.item.description}
             </div>
           </template>
+
+          <template slot="recipe" slot-scope="row">
+            <div @click.stop="row.toggleDetails">
+              ${ getTarget(recipes, row.item.recipeId).body.info.name } (${ row.item.recipeId })
+            </div>
+          </template>
+
+          <template slot="data" slot-scope="row">
+            <div @click.stop="row.toggleDetails">
+              ${ getTarget(learningData, row.item.dataId).name } (${ row.item.dataId }
+            </div>
+          </template>
+
+
           <template slot="update_time" slot-scope="row">
             <div @click.stop="row.toggleDetails" class="nowrap">
               ${row.item.update_time}
@@ -613,6 +627,17 @@
                   <b-form-textarea v-model="row.item.description" placeholder="" :rows="3" :max-rows="6" class="w-50">
                 </b-col>
               </b-row>
+
+              <b-row class="mb-2">
+                <b-col sm="3" class="text-sm-right"><b>${$t("model.recipe")}:</b></b-col>
+                <b-col>${ getTarget(recipes, row.item.recipeId).body.info.name } (${ row.item.recipeId })</b-col>
+              </b-row>
+
+              <b-row class="mb-2">
+                <b-col sm="3" class="text-sm-right"><b>${$t("model.data")}:</b></b-col>
+                <b-col>${ getTarget(learningData, row.item.dataId).name } (${ row.item.dataId })</b-col>
+              </b-row>
+
               <b-row class="mb-2">
                 <b-col sm="3" class="text-sm-right"><b>${$t("table.createTime")}:</b></b-col>
                 <b-col>${ row.item.create_time }</b-col>

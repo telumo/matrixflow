@@ -871,6 +871,14 @@ window.onload = function() {
             label: this.$i18n.t("table.description"),
             sortable: false,
           },
+          recipe: {
+            label: this.$i18n.t("model.recipe"),
+            sortable: false,
+          },
+          data: {
+            label: this.$i18n.t("model.data"),
+            sortable: false,
+          },
           update_time: {
             label: this.$i18n.t("table.updateTime"),
             sortable: true,
@@ -887,7 +895,14 @@ window.onload = function() {
             return i;
           }
         }
-      }
+      },
+      getTarget(targetList, targetId){
+        for(let i=0; i< targetList.length; i++){
+          if(targetList[i].id == targetId){
+            return targetList[i];
+          }
+        }
+      },
     },
     watch: {
       selectedLanguage: function(newLocale, oldLocale){

@@ -41,7 +41,9 @@
       "details": "詳細"
     },
     "model": {
-      "id": "モデルID"
+      "id": "モデルID",
+      "recipe": "レシピ",
+      "data": "データ"
     },
     "data":{
       "id": "データID",
@@ -124,7 +126,9 @@
       "details": "Details"
     },
     "model": {
-      "id": "Model ID"
+      "id": "Model ID",
+      "recipe": "レシピ",
+      "data": "データ"
     },
     "data":{
       "id": "Deta ID",

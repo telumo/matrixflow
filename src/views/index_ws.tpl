@@ -734,7 +734,14 @@
               </div>
             </b-col>
             <b-col>
-              <chartjs-horizontal-bar :datalabel="'Result'" :labels="inferenceLabels" :data="inferenceResult.vectors[0]" :bind="true"></chartjs-horizontal-bar>
+              <chartjs-horizontal-bar
+                :datalabel="'Result'"
+                :labels="inferenceLabels"
+                :data="inferenceResult.vectors[0]"
+                :bind="true"
+                :backgroundcolor="themeColor"
+                :bordercolor="themeColor">
+              </chartjs-horizontal-bar>
            </b-col>
            <b-col sm="2" class="text-sm-right"></b-col>
           </b-row>

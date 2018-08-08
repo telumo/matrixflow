@@ -156,51 +156,6 @@ window.onload = function() {
       imagesPerPage: imagesPerPage,
       ],
       chartOptions: {responsive: false, maintainAspectRatio: false},
-      accuracyTrainChartData: {
-        labels: [],
-        datasets: [
-          {
-            label: "train_accuracy",
-            fill: false,
-            backgroundColor: themeColor,
-            data: []
-          }
-        ]
-      },
-      lossTrainChartData: {
-        labels: [],
-        datasets: [
-          {
-            label: "train_loss",
-            fill: false,
-            backgroundColor: themeColor,
-            data: []
-          }
-        ]
-      },
-      accuracyTestChartData: {
-        labels: [],
-        datasets: [
-          {
-            label: "test_accuracy",
-            fill: false,
-            backgroundColor: '#f87979',
-            data: []
-          }
-        ]
-      },
-      lossTestChartData: {
-        labels: [],
-        datasets: [
-          {
-            label: "test_loss",
-            fill: false,
-            backgroundColor: '#f87979',
-            data: []
-          }
-        ]
-      },
-
       uploaded: false,
       progress: 0,
       result: ""

@@ -664,11 +664,6 @@
                 <div style="clear: both;"></div>
               </b-collapse>
 
-              <b-row class="mb-2">
-                <b-col sm="3" class="text-sm-right"><b>${$t("table.updateTime")}:</b></b-col>
-                <b-col>${ row.item.update_time }</b-col>
-              </b-row>
-
               <div v-if="row.item.mode == 'detail'">
                 <b-button size="sm" @click="row.item.mode = 'edit'">${$t("button.edit")}</b-button>
                 <b-button size="sm" @click="row.toggleDetails">${$t("button.close")}</b-button>

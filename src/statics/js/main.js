@@ -771,7 +771,8 @@ window.onload = function() {
         this.inferenceTypeOptions = [
           {value: "classification", text: i18n.t("inference.classification")},
           {value: "regression", text: i18n.t("inference.regression")},
-          {value: "vectorization", text: i18n.t("inference.vectorization")}
+          {value: "vectorization", text: i18n.t("inference.vectorization")},
+          {value: "dimRed", text: i18n.t("inference.dimRed")}
         ];
       },
       setActivationOptions: function(){

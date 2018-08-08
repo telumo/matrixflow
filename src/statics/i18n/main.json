@@ -51,7 +51,8 @@
       "type": "種類",
       "classification": "分類",
       "regression": "回帰",
-      "vectorization": "ベクトル化"
+      "vectorization": "ベクトル化",
+      "dimRed": "次元圧縮"
     },
     "data":{
       "id": "データID",
@@ -145,7 +146,8 @@
       "type": "Type",
       "classification": "Classification",
       "regression": "Regression",
-      "vectorization": "Vectorization"
+      "vectorization": "Vectorization",
+      "dimRed": "Dimensionality reduction"
     },
     "data":{
       "id": "Deta ID",

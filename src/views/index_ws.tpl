@@ -646,29 +646,43 @@
                 <b-col sm="3" class="text-sm-right"><b>${$t("table.updateTime")}:</b></b-col>
                 <b-col>${ row.item.update_time }</b-col>
               </b-row>
-              <div>
+              <b-row class="mb-2">
+                <b-col sm="3">
+                  <b-btn size="sm" v-b-toggle="'show-chart-'+row.index">${$t("model.showCharts")}</b-btn>
+                </b-col>
+                <b-col></b-col>
+              </b-row>
+
+              <b-collapse :id="'show-chart-'+row.index" visible>
                 <draggable @choose="dragChoose" @end="dragEnd" v-on:blur="dragBlur">
                   <div v-for="c in row.item.charts">
                     <div>
-                      <line-chart :chart-data=c :options=chartOptions :width="500" style="float: left;"></line-chart>
+                      <line-chart :chart-data=c :options=chartOptions :width="500" class="chart"></line-chart>
                     </div>
                   </div>
                 </draggable>
-              </div>
+                <div style="clear: both;"></div>
+              </b-collapse>
 
-              <div style="clear: both;">
+              <b-row class="mb-2">
+                <b-col sm="3" class="text-sm-right"><b>${$t("table.updateTime")}:</b></b-col>
+                <b-col>${ row.item.update_time }</b-col>
+              </b-row>
+
               <div v-if="row.item.mode == 'detail'">
                 <b-button size="sm" @click="row.item.mode = 'edit'">${$t("button.edit")}</b-button>
                 <b-button size="sm" @click="row.toggleDetails">${$t("button.close")}</b-button>
               </div>
+
               <div v-if="row.item.mode == 'edit'">
                 <b-button size="sm" @click="updateModel(row.item)">${$t("button.save")}</b-button>
                 <b-button size="sm" @click="cancelModel(row.item)">${$t("button.cancel")}</b-button>
               </div>
+
               <div class="button-right">
                 <b-btn size="sm" v-b-modal="'deleteModel'+row.index">${$t("button.delete")}</b-btn>
               </div>
-              </div>
+
 
             </b-card>
 

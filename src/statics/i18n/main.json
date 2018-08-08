@@ -43,7 +43,8 @@
     "model": {
       "id": "モデルID",
       "recipe": "レシピ",
-      "data": "データ"
+      "data": "データ",
+      "showCharts": "学習グラフの表示/非表示"
     },
     "data":{
       "id": "データID",
@@ -128,7 +129,8 @@
     "model": {
       "id": "Model ID",
       "recipe": "Recipe",
-      "data": "Data"
+      "data": "Data",
+      "showCharts": "open/close charts"
     },
     "data":{
       "id": "Deta ID",

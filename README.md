@@ -6,6 +6,7 @@ Deep Learning Framework for Non-Engineers.
 ![layers](https://github.com/Tdual/matrixflow/blob/master/layers.gif)
 ![showdata](https://github.com/Tdual/matrixflow/blob/master/showdata.gif)
 ![learning](https://github.com/Tdual/matrixflow/blob/master/learning.gif)
+![inference_mnist](https://github.com/Tdual/matrixflow/blob/master/inference_mnist.gif)
 
 ## Installation
 

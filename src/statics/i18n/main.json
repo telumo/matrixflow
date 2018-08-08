@@ -46,6 +46,13 @@
       "data": "データ",
       "showCharts": "学習グラフの表示/非表示"
     },
+    "inference":{
+      "model": "モデル",
+      "type": "種類",
+      "classification": "分類",
+      "regression": "回帰",
+      "vectorization": "ベクトル化"
+    },
     "data":{
       "id": "データID",
       "dataset": "画像データとラベル",
@@ -65,6 +72,7 @@
         "recipe": "レシピ管理",
         "learning": "学習",
         "model": "モデル管理",
+        "inference": "推論",
         "setting": "設定"
       },
       "data": {
@@ -132,6 +140,13 @@
       "data": "Data",
       "showCharts": "open/close charts"
     },
+    "inference":{
+      "model": "Model",
+      "type": "Type",
+      "classification": "Classification",
+      "regression": "Regression",
+      "vectorization": "Vectorization"
+    },
     "data":{
       "id": "Deta ID",
       "dataset": "Images & Labels",
@@ -151,6 +166,7 @@
         "recipe": "Recipe Management",
         "learning": "Learning",
         "model": "Model Management",
+        "inference": "Inference",
         "setting": "Settings"
       },
       "data": {

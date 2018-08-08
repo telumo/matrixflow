@@ -43,6 +43,7 @@
           <b-nav-item @click="changeMenu('recipe')">${$t("tab.menu.recipe")}</b-nav-item>
           <b-nav-item @click="changeMenu('learning')">${$t("tab.menu.learning")}</b-nav-item>
           <b-nav-item @click="changeMenu('model')">${$t("tab.menu.model")}</b-nav-item>
+          <b-nav-item @click="changeMenu('inference')">${$t("tab.menu.inference")}</b-nav-item>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
           <b-nav-item-dropdown right>
@@ -694,6 +695,28 @@
               </b-modal>
           </template>
         </b-table>
+      </div>
+
+      <div v-show="selectedMenu == 'inference'">
+        <h2>${$t("tab.menu.inference")}</h2>
+        <b-card>
+          <b-row class="mb-2">
+            <b-col sm="2" class="text-sm-right">
+              <b>${$t("inference.model")}:</b>
+            </b-col>
+            <b-col>
+              <b-form-select v-model="selectedModel" :options="modelOptions" class="w-50" />
+            </b-col>
+          </b-row>
+          <b-row class="mb-2">
+            <b-col sm="2" class="text-sm-right">
+              <b>${$t("inference.type")}:</b>
+            </b-col>
+            <b-col>
+              <b-form-select v-model="selectedInferenceType" :options="inferenceTypeOptions" class="w-50" />
+            </b-col>
+          </b-row>
+        </b-card>
       </div>
 
       <div v-show="selectedMenu == 'setting'">

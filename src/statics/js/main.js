@@ -58,6 +58,7 @@ window.onload = function() {
       models: [],
       learningData: [],
       selectedRecipe: "",
+      selectedModel: "",
       selectedLearningData: "",
       recipeFields: {},
       dataFields: {},
@@ -149,12 +150,13 @@ window.onload = function() {
       showAddRecipe: false,
       languageOptions: [],
       activationOptions:[],
+      inferenceTypeOptions: [],
       selectedMenu: "data",
       selectedLanguage: language,
       dataSortBy: "update_time",
       dataSortDesc: true,
       imagesPerPage: imagesPerPage,
-      ],
+      selectedInferenceType: "",
       chartOptions: {responsive: false, maintainAspectRatio: false},
       uploaded: false,
       progress: 0,
@@ -643,6 +645,7 @@ window.onload = function() {
         this.setDataFields();
         this.setModelFields();
         this.setActivationOptions();
+        this.setInferenceTypeOptions();
         this.selectedMenu = menu;
       },
       changeLang: function(lang){
@@ -763,6 +766,13 @@ window.onload = function() {
       json2String: function(json){
         console.log(json);
         return JSON.stringify(json, undefined, 4);
+      },
+      setInferenceTypeOptions: function(){
+        this.inferenceTypeOptions = [
+          {value: "classification", text: i18n.t("inference.classification")},
+          {value: "regression", text: i18n.t("inference.regression")},
+          {value: "vectorization", text: i18n.t("inference.vectorization")}
+        ];
       },
       setActivationOptions: function(){
         this.activationOptions = [
@@ -909,6 +919,14 @@ window.onload = function() {
         });
         return options
       },
+      modelOptions: function(){
+        const options = []
+        this.models.forEach((v) => {
+          const option = {"value": v, "text": v["name"]+" ("+v["id"]+")"};
+          options.push(option);
+        });
+        return options
+      },
     },
     created: function(){
       this.initNewRecipe()
@@ -918,6 +936,7 @@ window.onload = function() {
       this.setRecipeFields();
       this.setModelFields();
       this.setActivationOptions();
+      this.setInferenceTypeOptions();
       this.initCharts(this.newModel);
       this.languageOptions = [
         { value: "en", text: "English" },

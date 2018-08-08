@@ -153,6 +153,17 @@ def handler(wsock, message):
             res["action"] = obj["action"]
             wsock.send(json.dumps(res))
 
+        elif obj["action"] == "inferenceImages":
+            d["action"] = obj["action"]
+            d["model_id"] = obj["modelId"]
+            d["recipe_id"] = obj["recipeId"]
+            d["inference_type"] = obj["type"]
+
+            res = {
+                "action": obj["action"]
+            }
+            wsock.send(json.dumps(res))
+
         elif obj["action"] == "deleteModel":
             model_id = obj["modelId"]
             r = fm.delete_model(model_id)
@@ -247,6 +258,18 @@ def handler(wsock, message):
                 log_debug("delete wsock delete")
                 response = {"action": "uploaded", "fileId": file_id}
                 wsock.send(json.dumps(response))
+        elif d["action"] == "inferenceImages":
+
+            res = fm.save_infrence(message)
+            file_path = res["detail"]["file_path"]
+            recipe_id = d["recipe_id"]
+            model_id = d["model_id"]
+            model = CNN(recipe_id)
+            res = model.inference(model_id, file_path)
+            res["action"] = "finishInference"
+            del dictionary[str(wsock)]
+            wsock.send(json.dumps(res))
+
 
 
 @app.route('/connect')

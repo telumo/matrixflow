@@ -42,6 +42,7 @@ window.onload = function() {
 
   const translations = res.data;
   Vue.use(VueI18n);
+  Vue.use(VueCharts);
   const i18n = new VueI18n({
     locale: language,
     messages: translations
@@ -60,6 +61,11 @@ window.onload = function() {
       selectedRecipe: "",
       selectedModel: "",
       selectedLearningData: "",
+      inferenceLabels: ["0","1","2","3", "4", "5", "6", "7", "8", "9"],
+      inferenceResult: {
+        vectors: [[0,0,0,0,0,0,0,0,0,0]],
+        categories: []
+      },
       recipeFields: {},
       dataFields: {},
       modelFields: {},
@@ -146,6 +152,7 @@ window.onload = function() {
       learningProgress: 0,
       learningNumIter: 0,
       uploadFile: null,
+      inferenceData: null,
       showAddData: false,
       showAddRecipe: false,
       languageOptions: [],
@@ -156,6 +163,8 @@ window.onload = function() {
       dataSortBy: "update_time",
       dataSortDesc: true,
       imagesPerPage: imagesPerPage,
+      selectedInferenceFile: "",
+      inferencePreviewImg: "",
       selectedInferenceType: "",
       chartOptions: {responsive: false, maintainAspectRatio: false},
       uploaded: false,
@@ -741,6 +750,32 @@ window.onload = function() {
         }
         this.$set(targetList, updateId, targetItem);
       },
+      selectInferenceFile: function(e){
+        e.preventDefault();
+        reader = new FileReader();
+        let files = e.target.files;
+        this.selectedInferenceFile = files[0];
+        reader.onload = e => {
+          this.inferencePreviewImg = e.target.result;
+        };
+        reader.readAsDataURL(this.selectedInferenceFile);
+
+        reader = new FileReader();
+        reader.onload = e => {
+          this.inferenceData = e.target.result;
+          const req = {
+            "action": "inferenceImages",
+            "type": this.selectedInferenceType,
+            "modelId": this.selectedModel.id,
+            "recipeId": this.selectedModel.recipeId
+          };
+          this.sendMessage(req);
+        };
+        reader.readAsArrayBuffer(this.selectedInferenceFile);
+      },
+      sendInferenceData: function(){
+        this.ws.send(this.inferenceData);
+      },
       updateRecipe: function(data){
         const req = {
           action: "updateRecipe",
@@ -1066,6 +1101,14 @@ window.onload = function() {
 
           }else if (res["action"] == "startUploading") {
             this.parseFile(this.uploadFile, 100000);
+
+          }else if (res["action"] == "inferenceImages") {
+            this.sendInferenceData();
+
+          }else if (res["action"] == "finishInference") {
+            console.log(res);
+            this.inferenceResult = res;
+            console.log(this.inferenceResult);
 
           }else if(res["action"] == "learning"){
             this.learningNumIter = res["nIter"]

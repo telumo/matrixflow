@@ -8,6 +8,8 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css"/>
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"/>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+    <script src="statics/js/vue-charts.js"></script>
     <script src="https://unpkg.com/vue"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -23,7 +25,7 @@
     <link type="text/css" rel="stylesheet" href="statics/css/main.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+
     <script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>
 
     <script src="//cdn.jsdelivr.net/npm/sortablejs@1.7.0/Sortable.min.js"></script>
@@ -716,6 +718,37 @@
               <b-form-select v-model="selectedInferenceType" :options="inferenceTypeOptions" class="w-50" />
             </b-col>
           </b-row>
+          <b-row class="mb-2">
+            <b-col sm="2" class="text-sm-right">
+              <b>${$t("inference.data")}:</b>
+            </b-col>
+            <b-col>
+              <b-form-file class="w-50 p-3 mb-1 bg-secondary" @change="selectInferenceFile"></b-form-file>
+            </b-col>
+          </b-row>
+          <b-row class="mb-2">
+            <b-col sm="2" class="text-sm-right"></b-col>
+            <b-col>
+              <div v-if="inferencePreviewImg">
+                <img :src="inferencePreviewImg" width="80%" height="80%">
+              </div>
+            </b-col>
+            <b-col>
+              <chartjs-horizontal-bar :datalabel="'Result'" :labels="inferenceLabels" :data="inferenceResult.vectors[0]" :bind="true"></chartjs-horizontal-bar>
+           </b-col>
+           <b-col sm="2" class="text-sm-right"></b-col>
+          </b-row>
+          <b-row class="mb-2">
+            <b-col sm="2" class="text-sm-right">
+              <b>${$t("inference.classifiResult")}:</b>
+            </b-col>
+            <b-col>
+              <div v-if="inferenceResult.categories">
+                ${inferenceResult.categories[0]}
+              </div>
+            </b-col>
+          </b-row>
+          <b-row class="mb-2">
         </b-card>
       </div>
 

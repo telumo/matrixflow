@@ -10,6 +10,7 @@ import tensorflow as tf
 recipe_dir = "./recipes"
 data_dir = "./data"
 model_dir = "./logs"
+inference_dir = "./inference"
 
 def upload_file(files):
     allow_file = ["jpeg","png","jpg","JPEG","JPG","PNG"]
@@ -303,6 +304,23 @@ def delete_data(id):
     res = {
         "status": "success",
         "data_type": "delete"
+    }
+    return res
+
+
+
+def save_infrence(file):
+    dir_name = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    dir_path = os.path.join(inference_dir, dir_name)
+    create_save_dir(dir_path)
+    file_path = os.path.join(dir_path, "tmp.jpg")
+    with open(file_path, "wb") as f:
+        f.write(file)
+
+    res = {
+        "status": "success",
+        "data_type": "detail",
+        "detail": {"id": dir_name, "file_path": file_path}
     }
     return res
 

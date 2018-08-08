@@ -52,7 +52,9 @@
       "classification": "分類",
       "regression": "回帰",
       "vectorization": "ベクトル化",
-      "dimRed": "次元圧縮"
+      "dimRed": "次元圧縮",
+      "data": "推論用データ",
+      "classifiResult": "分類結果"
     },
     "data":{
       "id": "データID",
@@ -147,7 +149,9 @@
       "classification": "Classification",
       "regression": "Regression",
       "vectorization": "Vectorization",
-      "dimRed": "Dimensionality reduction"
+      "dimRed": "Dimensionality reduction",
+      "data": "Inference Data",
+      "classifiResult": "Classification Result"
     },
     "data":{
       "id": "Deta ID",

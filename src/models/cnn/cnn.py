@@ -4,6 +4,7 @@ import json
 from tqdm import tqdm
 import inspect
 import os
+from pathlib import Path
 from collections import defaultdict
 import datetime
 import networkx as nx
@@ -30,7 +31,7 @@ class CNN(Model):
         self.recipe = self.rma.load_recipe(recipe_path=recipe_id)
         self.methods = dict(inspect.getmembers(self, inspect.ismethod))
         self.edge_dict = defaultdict(list)
-        print(json.dumps(self.recipe, indent=2))
+        #print(json.dumps(self.recipe, indent=2))
         self.id = None
         self.out_dir = None
 
@@ -50,6 +51,30 @@ class CNN(Model):
             self.edge_dict[target].append(source)
         print('"target":["source"]')
         print(self.edge_dict)
+
+    def inference(self, model_id, image_path):
+        ckpt_dir = Path(out_dir) / model_id / "checkpoints"
+        image = self.ima.imread(image_path)
+        latest_ckpt = tf.train.get_checkpoint_state(ckpt_dir).model_checkpoint_path
+        with tf.Graph().as_default():
+            sess = tf.Session()
+            with sess.as_default():
+                self.build_nn()
+                saver = tf.train.Saver()
+                saver.restore(sess, latest_ckpt)
+                for o in sess.graph.get_operations():
+                    #print(o.name)
+                    if(o.name == "fc_1/BiasAdd"):
+                        output = o
+                vec = output.values()[0]
+                cate, vecs = sess.run([tf.argmax(vec, axis=1), vec], feed_dict={self.x: [image]})
+                print(cate)
+                print(vecs)
+        res = {
+            "categories": cate.tolist(),
+            "vectors": vecs.tolist()
+        }
+        return res
 
 
     def build_nn(self):
@@ -130,7 +155,7 @@ class CNN(Model):
                 if model_info:
                     print("save model info")
                     model_info["dataId"] = data_path
-                    model_info["recipeId"] = self.recipe_id 
+                    model_info["recipeId"] = self.recipe_id
                     model_info["train_config"] = config
                     r = put_model_info(model_info, self.id)
                     print(r)

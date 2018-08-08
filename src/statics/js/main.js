@@ -694,7 +694,6 @@ window.onload = function() {
         };
         this.progress = 1;
         this.sendMessage(request);
-        this.parseFile(this.uploadFile, 100000);
       },
       updateData: function(data){
         const req = {
@@ -1064,6 +1063,9 @@ window.onload = function() {
 
           }else if (res["action"] == "updateModel") {
             this.updateList(this.models, res.model);
+
+          }else if (res["action"] == "startUploading") {
+            this.parseFile(this.uploadFile, 100000);
 
           }else if(res["action"] == "learning"){
             this.learningNumIter = res["nIter"]

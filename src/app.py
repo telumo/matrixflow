@@ -82,16 +82,28 @@ def delete_recipe(recipe_id):
 
 
 def handler(wsock, message):
+    if str(wsock) not in dictionary:
+        dictionary[str(wsock)] = {}
+        log_debug("####################")
+        log_debug("create new wsock dict.")
+        log_debug("####################")
     d = dictionary[str(wsock)]
     log_debug(dictionary.keys())
-    log_debug(d["size"])
     try:
         obj = json.loads(message)
         print(obj)
         if obj["action"] == "startUploading":
+            d["size"] = 0
+            d["uploading_file"] = bytearray()
+            d["action"] = obj["action"]
             d["file_size"] = obj.get("fileSize", 0)
             d["name"] = obj.get("name", "")
             d["description"] = obj.get("description", "")
+
+            res = {
+                "action": obj["action"]
+            }
+            wsock.send(json.dumps(res))
 
         elif obj["action"] == "getDataList":
             offset = obj.get("offset", 0)
@@ -212,23 +224,29 @@ def handler(wsock, message):
             wsock.send(json.dumps(res))
 
     except (UnicodeDecodeError, json.decoder.JSONDecodeError):
-        d["size"] += len(message)
-        d["uploading_file"] += message
-        response = {"status": "loading", "loadedSize": d["size"]}
-        print(response)
-        time.sleep(0.05) # for the progress bar.
-        wsock.send(json.dumps(response))
-        if d["size"] == int(d["file_size"]):
-            uploading_file = d["uploading_file"]
-            file_id = fm.generate_id()
-            result = fm.put_zip_file(uploading_file, file_id, is_expanding=True)
-            new_data = {
-                "name": d["name"],
-                "description": d["description"]
-            }
-            fm.put_data_info(new_data, file_id)
-            response = {"action": "uploaded", "fileId": file_id}
+        print(d["action"])
+        if d["action"]  == "startUploading":
+
+            d["size"] += len(message)
+            log_debug(d["size"])
+            d["uploading_file"] += message
+            response = {"status": "loading", "loadedSize": d["size"]}
+            time.sleep(0.05) # for the progress bar.
             wsock.send(json.dumps(response))
+
+            if d["size"] == int(d["file_size"]):
+                uploading_file = d["uploading_file"]
+                file_id = fm.generate_id()
+                result = fm.put_zip_file(uploading_file, file_id, is_expanding=True)
+                new_data = {
+                    "name": d["name"],
+                    "description": d["description"]
+                }
+                fm.put_data_info(new_data, file_id)
+                del dictionary[str(wsock)]
+                log_debug("delete wsock delete")
+                response = {"action": "uploaded", "fileId": file_id}
+                wsock.send(json.dumps(response))
 
 
 @app.route('/connect')
@@ -237,15 +255,6 @@ def handle_websocket():
     if not wsock:
         abort(400, 'Expected WebSocket request.')
     global dictionary
-
-    if wsock not in dictionary:
-        dictionary[str(wsock)] = {
-            "num": None,
-            "file_size": 0,
-            "size": 0,
-            "uploading_file": bytearray()
-        }
-
     while True:
         try:
             message = wsock.receive()

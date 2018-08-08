@@ -148,14 +148,12 @@ window.onload = function() {
       showAddData: false,
       showAddRecipe: false,
       languageOptions: [],
+      activationOptions:[],
       selectedMenu: "data",
       selectedLanguage: language,
       dataSortBy: "update_time",
       dataSortDesc: true,
       imagesPerPage: imagesPerPage,
-      activationOptions:[
-        {value: "relu", text: "ReLU"},
-        {value: "ident", text: i18n.t("activation.ident")}
       ],
       chartOptions: {responsive: false, maintainAspectRatio: false},
       accuracyTrainChartData: {
@@ -689,6 +687,7 @@ window.onload = function() {
         this.setRecipeFields();
         this.setDataFields();
         this.setModelFields();
+        this.setActivationOptions();
         this.selectedMenu = menu;
       },
       changeLang: function(lang){
@@ -809,6 +808,12 @@ window.onload = function() {
       json2String: function(json){
         console.log(json);
         return JSON.stringify(json, undefined, 4);
+      },
+      setActivationOptions: function(){
+        this.activationOptions = [
+          {value: "relu", text: "ReLU"},
+          {value: "ident", text: i18n.t("activation.ident")}
+        ];
       },
       setRecipeFields: function(){
         this.recipeFields = {
@@ -957,6 +962,7 @@ window.onload = function() {
       this.setDataFields();
       this.setRecipeFields();
       this.setModelFields();
+      this.setActivationOptions();
       this.initCharts(this.newModel);
       this.languageOptions = [
         { value: "en", text: "English" },

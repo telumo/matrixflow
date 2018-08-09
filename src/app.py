@@ -260,13 +260,15 @@ def handler(wsock, message):
                 wsock.send(json.dumps(response))
         elif d["action"] == "inferenceImages":
 
-            res = fm.save_infrence(message)
+            res = fm.save_inference(message)
+            file_id = res["detail"]["id"]
             file_path = res["detail"]["file_path"]
             recipe_id = d["recipe_id"]
             model_id = d["model_id"]
             model = CNN(recipe_id)
             res = model.inference(model_id, file_path)
             res["action"] = "finishInference"
+            fm.delete_inference(file_id)
             del dictionary[str(wsock)]
             wsock.send(json.dumps(res))
 

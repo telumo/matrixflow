@@ -309,7 +309,7 @@ def delete_data(id):
 
 
 
-def save_infrence(file):
+def save_inference(file):
     dir_name = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     dir_path = os.path.join(inference_dir, dir_name)
     create_save_dir(dir_path)
@@ -321,6 +321,17 @@ def save_infrence(file):
         "status": "success",
         "data_type": "detail",
         "detail": {"id": dir_name, "file_path": file_path}
+    }
+    return res
+
+
+def delete_inference(id):
+    p = Path(inference_dir) / id
+    if os.path.isdir(p):
+        shutil.rmtree(p)
+    res = {
+        "status": "success",
+        "data_type": "delete"
     }
     return res
 

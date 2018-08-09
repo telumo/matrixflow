@@ -249,11 +249,10 @@ def handler(wsock, message):
                 uploading_file = d["uploading_file"]
                 file_id = fm.generate_id()
                 result = fm.put_zip_file(uploading_file, file_id, is_expanding=True)
-                new_data = {
-                    "name": d["name"],
-                    "description": d["description"]
-                }
-                fm.put_data_info(new_data, file_id)
+                info =  fm.get_data_statics(file_id)
+                info["name"] = d["name"]
+                info["description"] = d["description"]
+                fm.put_data_info(info, file_id)
                 del dictionary[str(wsock)]
                 log_debug("delete wsock delete")
                 response = {"action": "uploaded", "fileId": file_id}

@@ -165,6 +165,26 @@
               <b-col>${ row.item.nLabels }</b-col>
             </b-row>
             <b-row class="mb-2">
+              <b-col sm="3" class="text-sm-right"><b>${$t("data.nClasses")}:</b></b-col>
+              <b-col>${ row.item.nClasses }</b-col>
+            </b-row>
+
+            <b-row class="mb-2">
+              <b-col sm="3" class="text-sm-right"><b>${$t("data.statistics")}:</b></b-col>
+              <b-col>
+                <div style="width:80%; height:80%;">
+                <chartjs-horizontal-bar
+                  :datalabel="row.item.id"
+                  :labels="Object.keys(row.item.statistics)"
+                  :data="Object.values(row.item.statistics)"
+                  :backgroundcolor="themeColor"
+                  :bordercolor="themeColor">
+                </chartjs-horizontal-bar>
+                </div>
+              </b-col>
+            </b-row>
+
+            <b-row class="mb-2">
               <b-col sm="3" class="text-sm-right"><b>${$t("table.createTime")}:</b></b-col>
               <b-col>${ row.item.create_time }</b-col>
             </b-row>

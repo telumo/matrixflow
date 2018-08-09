@@ -6,6 +6,7 @@ import json
 import zipfile
 from pathlib import Path
 import tensorflow as tf
+import pandas as pd
 
 recipe_dir = "./recipes"
 data_dir = "./data"
@@ -85,6 +86,22 @@ def get_content_type(name):
         ext = "jpeg"
     content_type = "image/"+ext
     return content_type
+
+def get_data_statics(file_id):
+    label_dir = Path(data_dir) / file_id / "labels"
+    label_path = list(label_dir.glob("*.csv"))[0]
+    print(label_path)
+    df = pd.read_csv(label_path, names=["filename", "label"])
+    df_count = df.groupby("label").count()
+    n_classes = len(df_count)
+    d = {}
+    for r in df_count.itertuples():
+        d[str(r[0])] = r[1]
+    res = {
+        "n_classes": n_classes,
+        "statistics": d
+    }
+    return res
 
 def put_zip_file(file, file_id, is_expanding=False):
     """
@@ -274,6 +291,8 @@ def get_data_info(path):
         "id": id,
         "nImages": n_images,
         "nLabels": n_labels,
+        "nClasses": body.get("n_classes", 0),
+        "statistics": body.get("statistics", {}),
         "name": body.get("name", ""),
         "description": body.get("description", ""),
         "update_time": update_time,

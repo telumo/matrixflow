@@ -61,7 +61,9 @@
       "dataset": "画像データとラベル",
       "zip": "zipファイル",
       "nImages": "画像数",
-      "nLabels": "ラベル数"
+      "nLabels": "ラベル数",
+      "nClasses": "クラス数",
+      "statistics": "統計データ"
     },
     "recipe":{
       "id": "レシピID",
@@ -158,7 +160,9 @@
       "dataset": "Images & Labels",
       "zip": "Zip File",
       "nImages": "Number of Images",
-      "nLabels": "Number of Labels"
+      "nLabels": "Number of Labels",
+      "nClasses": "Number of Classes",
+      "statistics": "Statistics"
     },
     "recipe":{
       "id": "Recipe ID",

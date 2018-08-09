@@ -67,7 +67,7 @@ class CNN(Model):
                     if(o.name == "fc_1/BiasAdd"):
                         output = o
                 vec = output.values()[0]
-                cate, vecs = sess.run([tf.argmax(vec, axis=1), vec], feed_dict={self.x: [image]})
+                cate, vecs = sess.run([tf.argmax(vec, axis=1), tf.nn.softmax(vec)], feed_dict={self.x: [image]})
                 print(cate)
                 print(vecs)
         res = {

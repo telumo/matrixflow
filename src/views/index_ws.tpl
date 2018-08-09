@@ -734,6 +734,7 @@
               </div>
             </b-col>
             <b-col>
+              <div v-if="inferencePreviewImg">
               <chartjs-horizontal-bar
                 :datalabel="'Result'"
                 :labels="inferenceLabels"
@@ -742,6 +743,7 @@
                 :backgroundcolor="themeColor"
                 :bordercolor="themeColor">
               </chartjs-horizontal-bar>
+            </div>
            </b-col>
            <b-col sm="2" class="text-sm-right"></b-col>
           </b-row>

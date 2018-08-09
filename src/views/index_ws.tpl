@@ -723,7 +723,7 @@
               <b>${$t("inference.data")}:</b>
             </b-col>
             <b-col>
-              <b-form-file class="w-50 p-3 mb-1 bg-secondary" @change="selectInferenceFile"></b-form-file>
+              <b-form-file class="w-50 p-3 mb-1 bg-secondary" @change="selectInferenceFile" :disabled="!selectedModel || !selectedInferenceType"></b-form-file>
             </b-col>
           </b-row>
           <b-row class="mb-2">

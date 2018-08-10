@@ -1,0 +1,10 @@
+{
+  "nClasses": 3,
+  "statistics": {
+    "nameA": 2,
+    "nameB": 1,
+    "nameC": 1
+  },
+  "name": "fashion MNIST",
+  "description": "fashion MNIST"
+}

@@ -1,6 +1,7 @@
 import os
 import shutil
 import hashlib
+import base64
 import datetime
 import json
 import zipfile
@@ -13,8 +14,9 @@ data_dir = "./data"
 model_dir = "./logs"
 inference_dir = "./inference"
 
+allow_file = ["jpeg","png","jpg","JPEG","JPG","PNG"]
+
 def upload_file(files):
-    allow_file = ["jpeg","png","jpg","JPEG","JPG","PNG"]
     u"""
     upload file (non multiple finles)
 
@@ -87,10 +89,15 @@ def get_content_type(name):
     content_type = "image/"+ext
     return content_type
 
-def get_data_statics(file_id):
+def get_data_path(file_id):
+    return Path(data_dir) / file_id
+
+def get_data_statistics(file_id):
     label_dir = Path(data_dir) / file_id / "labels"
-    label_path = list(label_dir.glob("*.csv"))[0]
-    print(label_path)
+    label_path_list = list(label_dir.glob("*.csv"))
+    if len(label_path_list) == 0:
+        return {}
+    label_path = label_path_list[0]
     df = pd.read_csv(label_path, names=["filename", "label"])
     df_count = df.groupby("label").count()
     n_classes = len(df_count)
@@ -98,7 +105,7 @@ def get_data_statics(file_id):
     for r in df_count.itertuples():
         d[str(r[0])] = r[1]
     res = {
-        "n_classes": n_classes,
+        "nClasses": n_classes,
         "statistics": d
     }
     return res
@@ -243,11 +250,25 @@ def get_model_list():
 
 def get_data(data_id, offset, limit):
     p = Path(data_dir) / data_id
+    if not p.exists():
+        res = {
+            "status": "error",
+        }
+        return res
+
     images_path = p / "images"
     labels_path = p / "labels" / "labels.csv"
-    images = list(images_path.glob("*"))
+    images = []
+    for ext in allow_file:
+        images += list(images_path.glob("*."+ext))
+
+    if (limit - offset) > len(images) or offset > len(images):
+        res = {
+            "status": "error",
+        }
+        return res
+
     data = images[offset: limit]
-    import base64
     dic_list = []
     for d in data:
         name = d.name
@@ -274,13 +295,19 @@ def get_data(data_id, offset, limit):
 
 
 def get_data_info(path):
+    """
+     path pathlib.Path
+    """
+    if not path.exists():
+        return {}
+
     images = path / "images"
     labels = path / "labels" / "labels.csv"
     info = path / "info" / "info.json"
     id = path.name
-    n_images = len(list(images.glob("*")))
-    print(n_images)
-    print(images, labels, info)
+    n_images = 0
+    for ext in allow_file:
+        n_images += len(list(images.glob("*."+ext)))
     if info.exists():
         with open(info, "r") as f:
             body = json.load(f)
@@ -300,7 +327,7 @@ def get_data_info(path):
         "id": id,
         "nImages": n_images,
         "nLabels": n_labels,
-        "nClasses": body.get("n_classes", 0),
+        "nClasses": body.get("nClasses", 0),
         "statistics": body.get("statistics", {}),
         "name": body.get("name", ""),
         "description": body.get("description", ""),

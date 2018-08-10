@@ -1,6 +1,7 @@
 [nosetests]
-verbosity=3
+verbosity=1
 with-coverage=1
+nologcapture=1
 cover-package=src
 exclude-dir=*/site-packages/*
 cover-html=1

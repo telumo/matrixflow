@@ -8,6 +8,7 @@ import zipfile
 from pathlib import Path
 import tensorflow as tf
 import pandas as pd
+import zipfile_utf8
 
 recipe_dir = "./recipes"
 data_dir = "./data"
@@ -123,9 +124,8 @@ def put_zip_file(file, file_id, is_expanding=False):
         f.write(file)
 
     if is_expanding:
-        with zipfile.ZipFile(file_path) as zf:
+        with zipfile_utf8.ZipFile(file_path) as zf:
             try:
-                print(zf)
                 zf.extractall(tmp)
 
                 image_dir =tmp.glob("*/images")

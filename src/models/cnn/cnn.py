@@ -157,6 +157,10 @@ class CNN(Model):
                     model_info["dataId"] = data_path
                     model_info["recipeId"] = self.recipe_id
                     model_info["train_config"] = config
+                    mapping_list = ["" for _ in range(len(self.ima.mapping_dic))]
+                    for k, v in self.ima.mapping_dic.items():
+                        mapping_list[int(v)] = k
+                    model_info["mapping"] = mapping_list
                     r = put_model_info(model_info, self.id)
                     print(r)
 

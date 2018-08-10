@@ -781,7 +781,7 @@
               <div v-if="inferencePreviewImg">
               <chartjs-horizontal-bar
                 :datalabel="'Result'"
-                :labels="inferenceLabels"
+                :labels="selectedModel.mapping"
                 :data="inferenceResult.vectors[0]"
                 :bind="true"
                 :backgroundcolor="themeColor"
@@ -796,8 +796,8 @@
               <b>${$t("inference.classifiResult")}:</b>
             </b-col>
             <b-col>
-              <div v-if="inferenceResult.categories">
-                ${inferenceResult.categories[0]}
+              <div v-if="inferenceResult.categories && selectedModel.mapping">
+                ${selectedModel.mapping[inferenceResult.categories[0]]}
               </div>
             </b-col>
           </b-row>

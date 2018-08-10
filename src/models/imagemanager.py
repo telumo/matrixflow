@@ -15,9 +15,12 @@ class Manager:
     def imread(self, path):
         return imageio.imread(path)
 
-    def get_resize_img(self, path, dim=28):
+    def get_resize_gray_img(self, path):
+        return rgb2gray(self.get_resize_img(path))
+
+    def get_resize_img(self, path, dim=28, channel=3):
         img = self.imread(path)
-        return skimage.transform.resize(img, [dim, dim, 3], mode="reflect")
+        return skimage.transform.resize(img, [dim, dim, channel], mode="reflect")
 
     def get_flatten_img(self, path, dim=28, invert_gray=False):
         if invert_gray:
@@ -52,11 +55,21 @@ class Manager:
 
     def create_label_obj(self, path):
         labels = {}
+        mapping_dic = {}
+
         with open(path, "r") as f:
             for line in f:
-                name = line.split(",")[0]
-                label = int(line.split(",")[1][:-1])
-                labels[name] = label
+                filename = line.split(",")[0]
+                label = line.split(",")[1][:-1]
+                if label in mapping_dic.keys():
+                    mapped_label = mapping_dic[label]
+                else:
+                    length = len(mapping_dic)
+                    mapping_dic[label] = length
+                    mapped_label = length
+                labels[filename] = mapped_label
+        self.mapping_dic = mapping_dic
+        print(self.mapping_dic)
         return labels
 
     def next_batch(self, kind, num, one_hot=True):

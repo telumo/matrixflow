@@ -194,7 +194,7 @@ def handler(wsock, message):
         elif obj["action"] == "updateData":
             data = obj["dataInfo"]
             file_id = obj["dataId"]
-            new_data = fm.put_data_info(data, file_id)
+            new_data = fm.update_data_info(data, file_id)
             res = {
                 "data": new_data,
                 "action": obj["action"]

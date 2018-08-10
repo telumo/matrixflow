@@ -144,6 +144,15 @@ def put_data_info(new_data, file_id):
     save_json(new_data, file_path)
     return get_data_info(p)
 
+def update_data_info(new_info, file_id):
+    path = Path(data_dir) / file_id
+    info = get_data_info(path)
+    for k,v in new_info.items():
+        info[k] = v
+    res = put_data_info(info, file_id)
+    return res
+
+
 def get_model_info(model_id):
     p = Path(model_dir) / model_id / "info" / "info.json"
     with open(p, "r") as f:

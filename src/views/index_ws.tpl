@@ -603,13 +603,23 @@
 
           <template slot="recipe" slot-scope="row">
             <div @click.stop="row.toggleDetails">
-              ${ getTarget(recipes, row.item.recipeId).body.info.name } (${ row.item.recipeId })
+              <span v-if="getTarget(recipes, row.item.recipeId)">
+                ${ getTarget(recipes, row.item.recipeId).body.info.name } (${ row.item.recipeId })
+              </span>
+              <span v-else class="deleted-item">
+                ${ row.item.recipeId }
+              </span>
             </div>
           </template>
 
           <template slot="data" slot-scope="row">
             <div @click.stop="row.toggleDetails">
-              ${ getTarget(learningData, row.item.dataId).name } (${ row.item.dataId }
+              <span v-if="getTarget(learningData, row.item.dataId)">
+                ${ getTarget(learningData, row.item.dataId).name } (${ row.item.dataId })
+              </span>
+              <span v-else class="deleted-item">
+                ${ row.item.dataId }
+              </span>
             </div>
           </template>
 
@@ -653,12 +663,26 @@
 
               <b-row class="mb-2">
                 <b-col sm="3" class="text-sm-right"><b>${$t("model.recipe")}:</b></b-col>
-                <b-col>${ getTarget(recipes, row.item.recipeId).body.info.name } (${ row.item.recipeId })</b-col>
+                <b-col>
+                  <span v-if="getTarget(recipes, row.item.recipeId)">
+                    ${ getTarget(recipes, row.item.recipeId).body.info.name } (${ row.item.recipeId })
+                  </span>
+                  <span v-else class="deleted-item">
+                    ${ row.item.recipeId }
+                  </span>
+                </b-col>
               </b-row>
 
               <b-row class="mb-2">
                 <b-col sm="3" class="text-sm-right"><b>${$t("model.data")}:</b></b-col>
-                <b-col>${ getTarget(learningData, row.item.dataId).name } (${ row.item.dataId })</b-col>
+                <b-col>
+                  <span v-if="getTarget(learningData, row.item.dataId)">
+                    ${ getTarget(learningData, row.item.dataId).name } (${ row.item.dataId })
+                  </span>
+                  <span v-else class="deleted-item">
+                    ${ row.item.dataId }
+                  </span>
+                </b-col>
               </b-row>
 
               <b-row class="mb-2">

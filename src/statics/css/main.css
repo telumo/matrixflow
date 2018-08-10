@@ -75,6 +75,10 @@ table {
   white-space: nowrap;
 }
 
+.deleted-item{
+  color: #dddddd;
+}
+
 .chart{
   margin: 3px;
   float: left;

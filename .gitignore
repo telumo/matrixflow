@@ -109,3 +109,6 @@ log/
 logs/
 src/data/*
 src/recipes/*
+coverage_html/
+
+node_modules

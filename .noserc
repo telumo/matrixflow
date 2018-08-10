@@ -1,0 +1,7 @@
+[nosetests]
+verbosity=3
+with-coverage=1
+cover-package=src
+exclude-dir=*/site-packages/*
+cover-html=1
+cover-html-dir=./coverage_html

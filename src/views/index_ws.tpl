@@ -172,9 +172,9 @@
             <b-row class="mb-2">
               <b-col sm="3" class="text-sm-right"><b>${$t("data.statistics")}:</b></b-col>
               <b-col>
-                <div style="width:80%; height:80%;">
+                <div style="width:70%; height:70%;">
                 <chartjs-horizontal-bar
-                  :datalabel="row.item.id"
+                  :datalabel="''"
                   :labels="Object.keys(row.item.statistics)"
                   :data="Object.values(row.item.statistics)"
                   :backgroundcolor="themeColor"

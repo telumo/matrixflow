@@ -247,6 +247,12 @@ def get_model_list():
     }
     return res
 
+def get_images(images_path):
+    images = []
+    for ext in allow_file:
+        images += list(images_path.glob("*."+ext))
+    return images
+
 
 def get_data(data_id, offset, limit):
     p = Path(data_dir) / data_id
@@ -258,9 +264,7 @@ def get_data(data_id, offset, limit):
 
     images_path = p / "images"
     labels_path = p / "labels" / "labels.csv"
-    images = []
-    for ext in allow_file:
-        images += list(images_path.glob("*."+ext))
+    images = get_images(images_path)
 
     if (limit - offset) > len(images) or offset > len(images):
         res = {

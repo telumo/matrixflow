@@ -241,3 +241,10 @@ def test_get_data_list():
         ]
     }
     eq_(res, expected)
+
+def test_get_images():
+    file_id = "test001"
+    path = fm.get_data_path(file_id)
+    images_path = path / "images"
+    res = fm.get_images(images_path)
+    eq_(len(res), 4)

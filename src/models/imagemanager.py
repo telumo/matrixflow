@@ -1,3 +1,4 @@
+import sys
 import skimage
 import skimage.transform
 from skimage.color import rgb2gray
@@ -5,6 +6,9 @@ import imageio
 from pathlib import Path
 import numpy as np
 import random
+
+sys.path.insert(0, '..')
+from filemanager import get_images
 
 
 class Manager:
@@ -34,7 +38,7 @@ class Manager:
         labels_path = p / "labels" / "labels.csv"
         self.labels = self.create_label_obj(labels_path)
         image_dir = p / "images"
-        images = list(image_dir.glob("*.jpg"))
+        images = get_images(image_dir)
         random.shuffle(images)
         n_images = len(images)
 

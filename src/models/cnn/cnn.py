@@ -90,7 +90,7 @@ class CNN(Model):
 
             if name == "inputData":
                 name = "input_data"
-                if int(params["channel"]) == 0:
+                if int(params.get("channel", 0)) == 0:
                     x_shape = [None, params["dataWidth"], params["dataHeight"]]
                 else:
                     x_shape = [None, params["dataWidth"], params["dataHeight"], params["channel"]]

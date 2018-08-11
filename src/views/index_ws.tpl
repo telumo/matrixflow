@@ -286,14 +286,7 @@
                       </b-col>
                     </b-row>
                     <div v-for="(p, k) in newRecipe.tappedLayer.data().params">
-                      <b-row v-if="k == 'outSize'">
-                        <b-col class="text-sm-right">
-                          ${k} :
-                        </b-col>
-                        <b-col class="text-sm-left">
-                          <b-form-input v-model="newRecipe.tappedLayer.data().params.outSize" type="number" size="sm"></b-form-input>
-                        </b-col>
-                      </b-row>
+
                       <b-row v-else-if="k == 'act'">
                         <b-col class="text-sm-right">
                           ${$t("recipe.activation")} :
@@ -302,14 +295,16 @@
                           <b-form-select v-model="newRecipe.tappedLayer.data().params.act" :options="activationOptions" class="mb-3" size="sm" />
                         </b-col>
                       </b-row>
+
                       <b-row v-else>
                         <b-col class="text-sm-right">
                           ${k} :
                         </b-col>
                         <b-col class="text-sm-left">
-                          ${p}
+                          <b-form-input v-model="newRecipe.tappedLayer.data().params[k]" type="number" size="sm"></b-form-input>
                         </b-col>
                       </b-row>
+
                     </div>
                     <b-list-group v-for="node in newRecipe.tappedLayer.neighborhood('node')">
                       <b-list-group-item v-if="node.data">

@@ -309,7 +309,8 @@ window.onload = function() {
               name: "inputData",
               params: {
                 "dataWidth": 28,
-                "dataHeight": 28
+                "dataHeight": 28,
+                "channel": 0
               },
               graph:{
                 position: {x: 150, y: 100}

@@ -2,7 +2,7 @@
 import cv2
 import os
 from filemanager import get_save_path
-from log import log_debug
+from log import log_info
 
 def get_facerect(CVimage):
     #cascade_path = '/usr/local/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml'

@@ -9,7 +9,7 @@ from argparse import ArgumentParser
 #sys.path.append(os.getcwd() + '/domain')
 
 from response import put_response
-from log import log_debug
+from log import log_info
 #from getface import cutout_face, get_face_image_name, circumscribe_face
 #from prob import Prob
 import filemanager as fm
@@ -89,11 +89,11 @@ def send_message(wsock, obj):
 def handler(wsock, message):
     if str(wsock) not in dictionary:
         dictionary[str(wsock)] = {}
-        log_debug("####################")
-        log_debug("create new wsock dict.")
-        log_debug("####################")
+        log_info("####################")
+        log_info("create new wsock dict.")
+        log_info("####################")
     d = dictionary[str(wsock)]
-    log_debug(dictionary.keys())
+    log_info(dictionary.keys())
     try:
         obj = json.loads(message)
         print(obj)
@@ -172,7 +172,7 @@ def handler(wsock, message):
         elif obj["action"] == "deleteModel":
             model_id = obj["modelId"]
             r = fm.delete_model(model_id)
-            log_debug(r)
+            log_info(r)
             res = {}
             res["action"] = obj["action"]
             res["modelId"] = model_id
@@ -181,7 +181,7 @@ def handler(wsock, message):
         elif obj["action"] == "deleteRecipe":
             recipe_id = obj["recipeId"]
             r = fm.delete_recipe(recipe_id)
-            log_debug(r)
+            log_info(r)
             res = {}
             res["action"] = obj["action"]
             res["recipeId"] = recipe_id
@@ -190,7 +190,7 @@ def handler(wsock, message):
         elif obj["action"] == "deleteData":
             data_id = obj["dataId"]
             r = fm.delete_data(data_id)
-            log_debug(r)
+            log_info(r)
             res = {}
             res["action"] = obj["action"]
             res["dataId"] = data_id
@@ -204,7 +204,7 @@ def handler(wsock, message):
                 "data": new_data,
                 "action": obj["action"]
             }
-            log_debug(res)
+            log_info(res)
             send_message(wsock, res)
 
         elif obj["action"] == "updateModel":
@@ -215,7 +215,7 @@ def handler(wsock, message):
                 "model": put_res["detail"],
                 "action": obj["action"]
             }
-            log_debug(res)
+            log_info(res)
             send_message(wsock, res)
 
         elif obj["action"] == "updateRecipe":
@@ -236,7 +236,7 @@ def handler(wsock, message):
                     "status": "error",
                     "action": obj["action"]
                 }
-            log_debug(res)
+            log_info(res)
             send_message(wsock, res)
 
     except (UnicodeDecodeError, json.decoder.JSONDecodeError):
@@ -244,7 +244,7 @@ def handler(wsock, message):
         if d["action"]  == "startUploading":
 
             d["size"] += len(message)
-            log_debug(d["size"])
+            log_info(d["size"])
             d["uploading_file"] += message
             res = {"status": "loading", "loadedSize": d["size"]}
             time.sleep(0.05) # for the progress bar.
@@ -259,7 +259,7 @@ def handler(wsock, message):
                 info["description"] = d["description"]
                 fm.put_data_info(info, file_id)
                 del dictionary[str(wsock)]
-                log_debug("delete wsock delete")
+                log_info("delete wsock delete")
                 res = {"action": "uploaded", "fileId": file_id}
                 send_message(wsock, res)
         elif d["action"] == "inferenceImages":
@@ -369,9 +369,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
     port = args.port
     if args.debug:
-        log_debug("debug mode.")
+        log_info("debug mode.")
         app.run(host="0.0.0.0", port=8081, debug=True, reloader=True)
     else:
         server = WSGIServer(("0.0.0.0", port), app, handler_class=WebSocketHandler)
-        log_debug("websocket server start. port:{}".format(port))
+        log_info("websocket server start. port:{}".format(port))
         server.serve_forever()

@@ -4,7 +4,6 @@ import hashlib
 import base64
 import datetime
 import json
-import zipfile
 from pathlib import Path
 import tensorflow as tf
 import pandas as pd
@@ -15,7 +14,8 @@ data_dir = "./data"
 model_dir = "./logs"
 inference_dir = "./inference"
 
-allow_file = ["jpeg","png","jpg","JPEG","JPG","PNG"]
+allow_file = ["jpeg", "png", "jpg", "JPEG", "JPG", "PNG"]
+
 
 def upload_file(files):
     u"""
@@ -31,9 +31,10 @@ def upload_file(files):
         }
         try:
             ext = name.split(".")[-1]
-            if not ext in allow_file:
+            if ext not in allow_file:
                 return error_res
-        except:
+        except Exception as e:
+            print(e)
             return error_res
 
         f = file.file.read()
@@ -45,7 +46,7 @@ def upload_file(files):
         file.save(save_path)
     if id:
         res = {
-            "status":"success",
+            "status": "success",
             "data_type": "detail",
             "detail": {"id": id, "name": name}
         }
@@ -57,10 +58,12 @@ def upload_file(files):
         }
     return res
 
+
 def create_save_dir(path="var/tmp"):
-    abs_path = os.path.join(os.getcwd(),path)
+    abs_path = os.path.join(os.getcwd(), path)
     if not os.path.exists(abs_path):
         os.makedirs(abs_path)
+
 
 def generate_id():
     """
@@ -68,20 +71,22 @@ def generate_id():
     """
     return datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
+
 def save_json(obj, file_path):
     with open(file_path, "w") as f:
         json.dump(obj, f, indent=2)
-
 
 
 def get_save_path(id):
     save_path = os.path.join(os.getcwd(), "var/tmp", id)
     return save_path
 
+
 def remove_save_path(id):
     save_path = get_save_path(id)
     if os.path.isdir(save_path):
         shutil.rmtree(save_path)
+
 
 def get_content_type(name):
     ext = name.split(".")[-1].lower()
@@ -110,6 +115,7 @@ def get_data_statistics(file_id):
         "statistics": d
     }
     return res
+
 
 def put_zip_file(file, file_id, is_expanding=False):
     """

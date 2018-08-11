@@ -1,24 +1,20 @@
-import tensorflow as tf
-import sys
-import json
-from tqdm import tqdm
-import inspect
 import os
-from pathlib import Path
+import json
+import inspect
 from collections import defaultdict
 import datetime
+from pathlib import Path
 import networkx as nx
+import tensorflow as tf
+from tqdm import tqdm
 
-sys.path.insert(0, '../..')
+import filemanager as fma
+from filemanager import put_model_info
 from ..recipe import Model
 from ..recipemanager import Manager as RecipeManager
 from ..imagemanager import Manager as ImageManager
-from filemanager import put_model_info
 
-out_dir = "logs"
 save_checkpoint = True
-os.makedirs(out_dir, exist_ok=True)
-
 
 
 class CNN(Model):
@@ -31,17 +27,15 @@ class CNN(Model):
         self.recipe = self.rma.load_recipe(recipe_path=recipe_id)
         self.methods = dict(inspect.getmembers(self, inspect.ismethod))
         self.edge_dict = defaultdict(list)
-        #print(json.dumps(self.recipe, indent=2))
         self.id = None
+        self.model_dir = fma.model_dir
         self.out_dir = None
 
-
-    def _change_edge_sources(self, id, output):
+    def _change_edge_sources(self, layer_id, output):
         for target, source_list in self.edge_dict.items():
-            if id in source_list:
-                self.edge_dict[target].remove(id)
+            if layer_id in source_list:
+                self.edge_dict[target].remove(layer_id)
                 self.edge_dict[target].append(output)
-        #print(self.edge_dict)
 
     def _generate_edge_dict(self):
         edges = self.recipe["edges"]
@@ -53,7 +47,7 @@ class CNN(Model):
         print(self.edge_dict)
 
     def inference(self, model_id, image_path):
-        ckpt_dir = Path(out_dir) / model_id / "checkpoints"
+        ckpt_dir = Path(self.model_dir) / model_id / "checkpoints"
         image = self.ima.imread(image_path)
         latest_ckpt = tf.train.get_checkpoint_state(ckpt_dir).model_checkpoint_path
         with tf.Graph().as_default():
@@ -63,11 +57,11 @@ class CNN(Model):
                 saver = tf.train.Saver()
                 saver.restore(sess, latest_ckpt)
                 for o in sess.graph.get_operations():
-                    #print(o.name)
-                    if(o.name == "fc_1/BiasAdd"):
+                    if o.name == "fc_1/BiasAdd":
                         output = o
                 vec = output.values()[0]
-                cate, vecs = sess.run([tf.argmax(vec, axis=1), tf.nn.softmax(vec)], feed_dict={self.x: [image]})
+                cate, vecs = sess.run(
+                    [tf.argmax(vec, axis=1), tf.nn.softmax(vec)], feed_dict={self.x: [image]})
                 print(cate)
                 print(vecs)
         res = {
@@ -75,7 +69,6 @@ class CNN(Model):
             "vectors": vecs.tolist()
         }
         return res
-
 
     def build_nn(self):
         self._generate_edge_dict()
@@ -85,7 +78,7 @@ class CNN(Model):
         G = nx.DiGraph()
         G.add_edges_from(ed)
         sorted_edges = list(nx.topological_sort(G))
-        layers_dict = { layer["id"]: layer for layer in layers}
+        layers_dict = {layer["id"]: layer for layer in layers}
 
         for layer_id in sorted_edges:
             layer = layers_dict[layer_id]
@@ -97,7 +90,10 @@ class CNN(Model):
 
             if name == "inputData":
                 name = "input_data"
-                x_shape = [None, params["dataWidth"], params["dataHeight"]]
+                if int(params["channel"]) == 0:
+                    x_shape = [None, params["dataWidth"], params["dataHeight"]]
+                else:
+                    x_shape = [None, params["dataWidth"], params["dataHeight"], params["channel"]]
                 self.x = self.methods[name](x_shape)
                 self._change_edge_sources(id, self.x)
             elif name == "inputLabels":
@@ -150,7 +146,7 @@ class CNN(Model):
             with tf.Session() as sess:
                 self.build_nn()
                 self.id = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-                self.out_dir = os.path.join(out_dir, self.id)
+                self.out_dir = str(Path(self.model_dir) / self.id)
 
                 if model_info:
                     print("save model info")

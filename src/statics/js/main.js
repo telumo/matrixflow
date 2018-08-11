@@ -160,7 +160,7 @@ window.onload = function() {
       inferenceTypeOptions: [],
       selectedMenu: "data",
       selectedLanguage: language,
-      dataSortBy: "update_time",
+      dataSortBy: "updateTime",
       dataSortDesc: true,
       imagesPerPage: imagesPerPage,
       selectedInferenceFile: "",
@@ -198,10 +198,10 @@ window.onload = function() {
         ]
         const charts = [];
         labels.forEach(v=>{
-          type_tag = v.label.split("_")
-          if (chartData && chartData[type_tag[0]][type_tag[1]]){
-            var labels = chartData[type_tag[0]].step;
-            var data = chartData[type_tag[0]][type_tag[1]];
+          typeTag = v.label.split("_")
+          if (chartData && chartData[typeTag[0]][typeTag[1]]){
+            var labels = chartData[typeTag[0]].step;
+            var data = chartData[typeTag[0]][typeTag[1]];
           }else{
             var labels = [];
             var data = [];
@@ -829,11 +829,11 @@ window.onload = function() {
             label: this.$i18n.t("table.description"),
             sortable: false
           },
-          update_time: {
+          updateTime: {
             label: this.$i18n.t("table.updateTime"),
             sortable: true,
           },
-          create_time: {
+          createTime: {
             label: this.$i18n.t("table.createTime"),
             sortable: true,
           }
@@ -853,11 +853,11 @@ window.onload = function() {
             label: this.$i18n.t("table.description"),
             sortable: false,
           },
-          update_time: {
+          updateTime: {
             label: this.$i18n.t("table.updateTime"),
             sortable: true,
           },
-          create_time: {
+          createTime: {
             label: this.$i18n.t("table.createTime"),
             sortable: true,
           }
@@ -885,11 +885,11 @@ window.onload = function() {
             label: this.$i18n.t("model.data"),
             sortable: false,
           },
-          update_time: {
+          updateTime: {
             label: this.$i18n.t("table.updateTime"),
             sortable: true,
           },
-          create_time: {
+          createTime: {
             label: this.$i18n.t("table.createTime"),
             sortable: true,
           }

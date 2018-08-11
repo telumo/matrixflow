@@ -246,7 +246,7 @@ def handler(wsock, message):
             d["size"] += len(message)
             log_debug(d["size"])
             d["uploading_file"] += message
-            response = {"status": "loading", "loadedSize": d["size"]}
+            res = {"status": "loading", "loadedSize": d["size"]}
             time.sleep(0.05) # for the progress bar.
             send_message(wsock, res)
 
@@ -260,7 +260,7 @@ def handler(wsock, message):
                 fm.put_data_info(info, file_id)
                 del dictionary[str(wsock)]
                 log_debug("delete wsock delete")
-                response = {"action": "uploaded", "fileId": file_id}
+                res = {"action": "uploaded", "fileId": file_id}
                 send_message(wsock, res)
         elif d["action"] == "inferenceImages":
 

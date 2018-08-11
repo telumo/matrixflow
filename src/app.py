@@ -14,6 +14,7 @@ from log import log_debug
 #from prob import Prob
 import filemanager as fm
 #html_path = "../static/html/"
+from utils import camel2snake, snake2camel, convert
 
 from gevent.pywsgi import WSGIServer
 import gevent
@@ -80,6 +81,10 @@ def delete_recipe(recipe_id):
     return put_response(res)
 
 
+def send_message(wsock, obj):
+    res = convert(obj, snake2camel)
+    res_json = json.dumps(res)
+    wsock.send(res_json)
 
 def handler(wsock, message):
     if str(wsock) not in dictionary:
@@ -103,14 +108,14 @@ def handler(wsock, message):
             res = {
                 "action": obj["action"]
             }
-            wsock.send(json.dumps(res))
+            send_message(wsock, res)
 
         elif obj["action"] == "getDataList":
             offset = obj.get("offset", 0)
             limit = obj.get("limit")
             res = fm.get_data_list()
             res["action"] = obj["action"]
-            wsock.send(json.dumps(res))
+            send_message(wsock, res)
 
         elif obj["action"] == "getData":
             offset = obj.get("offset", 0)
@@ -119,21 +124,21 @@ def handler(wsock, message):
             res = fm.get_data(data_id, offset, limit)
             res["action"] = obj["action"]
             res["dataId"] = data_id
-            wsock.send(json.dumps(res))
+            send_message(wsock, res)
 
         elif obj["action"] == "getRecipeList":
             offset = obj.get("offset", 0)
             limit = obj.get("limit")
             res = fm.get_recipe_list(offset, limit)
             res["action"] = obj["action"]
-            wsock.send(json.dumps(res))
+            send_message(wsock, res)
 
         elif obj["action"] == "getModelList":
             offset = obj.get("offset", 0)
             limit = obj.get("limit")
             res = fm.get_model_list()
             res["action"] = obj["action"]
-            wsock.send(json.dumps(res))
+            send_message(wsock, res)
 
         elif obj["action"] == "startLearning":
 
@@ -145,13 +150,13 @@ def handler(wsock, message):
             res = model.train(config, data_id, wsock, model_info)
             res["action"] = "finishLearning"
             del model
-            wsock.send(json.dumps(res))
+            send_message(wsock, res)
 
         elif obj["action"] == "addRecipe":
             recipe = obj["recipe"]
             res = fm.save_recipe(recipe)
             res["action"] = obj["action"]
-            wsock.send(json.dumps(res))
+            send_message(wsock, res)
 
         elif obj["action"] == "inferenceImages":
             d["action"] = obj["action"]
@@ -162,7 +167,7 @@ def handler(wsock, message):
             res = {
                 "action": obj["action"]
             }
-            wsock.send(json.dumps(res))
+            send_message(wsock, res)
 
         elif obj["action"] == "deleteModel":
             model_id = obj["modelId"]
@@ -171,7 +176,7 @@ def handler(wsock, message):
             res = {}
             res["action"] = obj["action"]
             res["modelId"] = model_id
-            wsock.send(json.dumps(res))
+            send_message(wsock, res)
 
         elif obj["action"] == "deleteRecipe":
             recipe_id = obj["recipeId"]
@@ -180,7 +185,7 @@ def handler(wsock, message):
             res = {}
             res["action"] = obj["action"]
             res["recipeId"] = recipe_id
-            wsock.send(json.dumps(res))
+            send_message(wsock, res)
 
         elif obj["action"] == "deleteData":
             data_id = obj["dataId"]
@@ -189,7 +194,7 @@ def handler(wsock, message):
             res = {}
             res["action"] = obj["action"]
             res["dataId"] = data_id
-            wsock.send(json.dumps(res))
+            send_message(wsock, res)
 
         elif obj["action"] == "updateData":
             data = obj["dataInfo"]
@@ -200,7 +205,7 @@ def handler(wsock, message):
                 "action": obj["action"]
             }
             log_debug(res)
-            wsock.send(json.dumps(res))
+            send_message(wsock, res)
 
         elif obj["action"] == "updateModel":
             model_id = obj["modelId"]
@@ -211,7 +216,7 @@ def handler(wsock, message):
                 "action": obj["action"]
             }
             log_debug(res)
-            wsock.send(json.dumps(res))
+            send_message(wsock, res)
 
         elif obj["action"] == "updateRecipe":
             recipe_id = obj["recipeId"]
@@ -232,7 +237,7 @@ def handler(wsock, message):
                     "action": obj["action"]
                 }
             log_debug(res)
-            wsock.send(json.dumps(res))
+            send_message(wsock, res)
 
     except (UnicodeDecodeError, json.decoder.JSONDecodeError):
         print(d["action"])
@@ -243,7 +248,7 @@ def handler(wsock, message):
             d["uploading_file"] += message
             response = {"status": "loading", "loadedSize": d["size"]}
             time.sleep(0.05) # for the progress bar.
-            wsock.send(json.dumps(response))
+            send_message(wsock, res)
 
             if d["size"] == int(d["file_size"]):
                 uploading_file = d["uploading_file"]
@@ -256,7 +261,7 @@ def handler(wsock, message):
                 del dictionary[str(wsock)]
                 log_debug("delete wsock delete")
                 response = {"action": "uploaded", "fileId": file_id}
-                wsock.send(json.dumps(response))
+                send_message(wsock, res)
         elif d["action"] == "inferenceImages":
 
             res = fm.save_inference(message)
@@ -269,7 +274,7 @@ def handler(wsock, message):
             res["action"] = "finishInference"
             fm.delete_inference(file_id)
             del dictionary[str(wsock)]
-            wsock.send(json.dumps(res))
+            send_message(wsock, res)
 
 
 

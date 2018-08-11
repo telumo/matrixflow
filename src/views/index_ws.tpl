@@ -121,14 +121,14 @@
             ${row.item.description}
           </div>
         </template>
-        <template slot="update_time" slot-scope="row">
+        <template slot="updateTime" slot-scope="row">
           <div @click.stop="toggleData(row)" class="nowrap">
-            ${row.item.update_time}
+            ${row.item.updateTime}
           </div>
         </template>
-        <template slot="create_time" slot-scope="row">
+        <template slot="createTime" slot-scope="row">
           <div @click.stop="toggleData(row)" class="nowrap">
-            ${row.item.create_time}
+            ${row.item.createTime}
           </div>
         </template>
 
@@ -186,11 +186,11 @@
 
             <b-row class="mb-2">
               <b-col sm="3" class="text-sm-right"><b>${$t("table.createTime")}:</b></b-col>
-              <b-col>${ row.item.create_time }</b-col>
+              <b-col>${ row.item.createTime }</b-col>
             </b-row>
             <b-row class="mb-2">
               <b-col sm="3" class="text-sm-right"><b>${$t("table.updateTime")}:</b></b-col>
-              <b-col>${ row.item.update_time }</b-col>
+              <b-col>${ row.item.updateTime }</b-col>
             </b-row>
             <b-row class="mb-2">
               <b-col v-for="i in row.item.images">
@@ -355,14 +355,14 @@
               ${row.item.description}
             </div>
           </template>
-          <template slot="update_time" slot-scope="row">
+          <template slot="updateTime" slot-scope="row">
             <div @click.stop="toggleRecipe(row)" class="nowrap">
-              ${row.item.update_time}
+              ${row.item.updateTime}
             </div>
           </template>
-          <template slot="create_time" slot-scope="row">
+          <template slot="createTime" slot-scope="row">
             <div @click.stop="toggleRecipe(row)" class="nowrap">
-              ${row.item.create_time}
+              ${row.item.createTime}
             </div>
           </template>
 
@@ -402,11 +402,11 @@
 
               <b-row class="mb-2">
                 <b-col sm="3" class="text-sm-right"><b>${$t("table.createTime")}:</b></b-col>
-                <b-col>${ row.item.create_time }</b-col>
+                <b-col>${ row.item.createTime }</b-col>
               </b-row>
               <b-row class="mb-2">
                 <b-col sm="3" class="text-sm-right"><b>${$t("table.updateTime")}:</b></b-col>
-                <b-col>${ row.item.update_time }</b-col>
+                <b-col>${ row.item.updateTime }</b-col>
               </b-row>
 
               <b-row class="mb-2">
@@ -624,14 +624,14 @@
           </template>
 
 
-          <template slot="update_time" slot-scope="row">
+          <template slot="updateTime" slot-scope="row">
             <div @click.stop="row.toggleDetails" class="nowrap">
-              ${row.item.update_time}
+              ${row.item.updateTime}
             </div>
           </template>
-          <template slot="create_time" slot-scope="row">
+          <template slot="createTime" slot-scope="row">
             <div @click.stop="row.toggleDetails" class="nowrap">
-              ${row.item.create_time}
+              ${row.item.createTime}
             </div>
           </template>
 
@@ -687,11 +687,11 @@
 
               <b-row class="mb-2">
                 <b-col sm="3" class="text-sm-right"><b>${$t("table.createTime")}:</b></b-col>
-                <b-col>${ row.item.create_time }</b-col>
+                <b-col>${ row.item.createTime }</b-col>
               </b-row>
               <b-row class="mb-2">
                 <b-col sm="3" class="text-sm-right"><b>${$t("table.updateTime")}:</b></b-col>
-                <b-col>${ row.item.update_time }</b-col>
+                <b-col>${ row.item.updateTime }</b-col>
               </b-row>
               <b-row class="mb-2">
                 <b-col sm="3">

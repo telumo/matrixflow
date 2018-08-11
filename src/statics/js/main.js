@@ -94,61 +94,7 @@ window.onload = function() {
           }
         }
       },
-      recipeLayers: [
-        {
-          "name": "inputData",
-          "type": "input",
-          "params": {
-            "dataWidth": 28,
-            "dataHeight": 28
-          },
-          "graph": {}
-        },
-        {
-          "name": "inputLabels",
-          "type": "input",
-          "params": {
-            "nClass": 10
-          },
-          "graph": {}
-        },
-        {
-          "name": "conv2d",
-          "type": "layer",
-          "params": {
-            "act": "relu",
-            "outSize": 32
-          },
-          "graph": {}
-        },
-        {
-          "name": "max_pool",
-          "type": "layer",
-          "graph": {}
-        },
-        {
-          "name": "fc",
-          "type": "layer",
-          "params": {
-            "act": "ident",
-            "outSize": 10
-          },
-          "graph": {}
-        },
-        {
-          "name": "flatten",
-          "type": "layer",
-          "graph": {}
-        },
-        {
-          "name": "reshape",
-          "type": "layer",
-          "params": {
-            "shape": [ -1, 28, 28, 1]
-          },
-          "graph": {}
-        }
-      ],
+      recipeLayers: [],
       learningProgress: 0,
       learningNumIter: 0,
       uploadFile: null,
@@ -188,6 +134,64 @@ window.onload = function() {
             return i;
           }
         }
+      },
+      initRecipeLayers: function(){
+        this.recipeLayers = [
+          {
+            "name": "inputData",
+            "type": "input",
+            "params": {
+              "dataWidth": 28,
+              "dataHeight": 28,
+                "channel": 0
+            },
+            "graph": {}
+          },
+          {
+            "name": "inputLabels",
+            "type": "input",
+            "params": {
+              "nClass": 10
+            },
+            "graph": {}
+          },
+          {
+            "name": "conv2d",
+            "type": "layer",
+            "params": {
+              "act": "relu",
+              "outSize": 32
+            },
+            "graph": {}
+          },
+          {
+            "name": "max_pool",
+            "type": "layer",
+            "graph": {}
+          },
+          {
+            "name": "fc",
+            "type": "layer",
+            "params": {
+              "act": "ident",
+              "outSize": 10
+            },
+            "graph": {}
+          },
+          {
+            "name": "flatten",
+            "type": "layer",
+            "graph": {}
+          },
+          {
+            "name": "reshape",
+            "type": "layer",
+            "params": {
+              "shape": [ -1, 28, 28, 1]
+            },
+            "graph": {}
+          }
+        ];
       },
       initCharts: function(model, chartData){
         const labels = [
@@ -973,6 +977,7 @@ window.onload = function() {
       this.setActivationOptions();
       this.setInferenceTypeOptions();
       this.initCharts(this.newModel);
+      this.initRecipeLayers();
       this.languageOptions = [
         { value: "en", text: "English" },
         { value: "ja", text: "日本語" }

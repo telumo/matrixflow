@@ -40,6 +40,7 @@ def test_put_data_info():
 
     eq_(expected, res)
 
+
 def test_get_data_info_1():
     file_id = "test_id"
     path = fm.get_data_path(file_id)
@@ -65,6 +66,7 @@ def test_get_data_info_1():
 
     eq_(res, expected)
 
+
 def test_get_data_info_2():
     file_id = "test001"
     path = fm.get_data_path(file_id)
@@ -83,11 +85,31 @@ def test_get_data_info_2():
     }
     eq_(res, expected)
 
+
 def test_get_data_info_3():
     file_id = "not_exist_id"
     path = fm.get_data_path(file_id)
     res = fm.get_data_info(path)
     eq_(res, {})
+
+
+def test_get_data_info_4():
+    file_id = "no_info"
+    path = fm.get_data_path(file_id)
+    res = fm.get_data_info(path)
+    expected = {
+        'id': 'no_info',
+        'nImages': 4,
+        'nLabels': 4,
+        'nClasses': 0,
+        'statistics': {},
+        'name': '',
+        'description': '',
+        'update_time': '2018-08-11 23:32:41',
+        'create_time': '2018-08-11 23:32:58'
+    }
+    eq_(res, expected)
+
 
 def test_update_data_info():
     file_id = "test_id"
@@ -225,7 +247,7 @@ def test_get_data_list():
     expected = {
         'status': 'success',
         'data_type': 'list',
-        'total': 1,
+        'total': 2,
         'list': [
             {
                 'id': 'test001',
@@ -237,6 +259,17 @@ def test_get_data_list():
                 'description': 'fashion MNIST',
                 'update_time': '2018-08-10 16:52:25',
                 'create_time': '2018-08-10 15:45:32'
+            },
+            {
+                'id': 'no_info',
+                'nImages': 4,
+                'nLabels': 4,
+                'nClasses': 0,
+                'statistics': {},
+                'name': '',
+                'description': '',
+                'update_time': '2018-08-11 23:32:41',
+                'create_time': '2018-08-11 23:32:58'
             }
         ]
     }

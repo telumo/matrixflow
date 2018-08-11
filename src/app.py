@@ -23,12 +23,8 @@ from geventwebsocket.handler import WebSocketHandler
 from multiprocessing import Process
 from models.cnn.cnn import CNN
 
-
-
 app = Bottle()
 dictionary = {}
-#prob = Prob()
-fm.create_save_dir()
 
 @app.route('/')
 def index_html():

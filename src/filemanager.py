@@ -14,55 +14,11 @@ data_dir = "./data"
 model_dir = "./logs"
 inference_dir = "./inference"
 
+os.makedirs(model_dir, exist_ok=True)
+
+
 allow_file = ["jpeg", "png", "jpg", "JPEG", "JPG", "PNG"]
 
-
-def upload_file(files):
-    u"""
-    upload file (non multiple finles)
-
-    """
-    id = ""
-    for name, file in files.items():
-        error_res = {
-            "status": "error",
-            "http_status": 400,
-            "code": 3
-        }
-        try:
-            ext = name.split(".")[-1]
-            if ext not in allow_file:
-                return error_res
-        except Exception as e:
-            print(e)
-            return error_res
-
-        f = file.file.read()
-        id = hashlib.md5(f).hexdigest()
-        save_path = get_save_path(id)
-        remove_save_path(id)
-        os.mkdir(save_path)
-        file.file.seek(0)
-        file.save(save_path)
-    if id:
-        res = {
-            "status": "success",
-            "data_type": "detail",
-            "detail": {"id": id, "name": name}
-        }
-    else:
-        res = {
-            "status": "error",
-            "http_status": 500,
-            "code": 2
-        }
-    return res
-
-
-def create_save_dir(path="var/tmp"):
-    abs_path = os.path.join(os.getcwd(), path)
-    if not os.path.exists(abs_path):
-        os.makedirs(abs_path)
 
 
 def generate_id():
@@ -72,31 +28,41 @@ def generate_id():
     return datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
 
+def get_create_time(p):
+    """
+    p Path object
+    """
+    epoch_time = os.path.getctime(p)
+    create_time = datetime.datetime.fromtimestamp(epoch_time).strftime("%Y-%m-%d %H:%M:%S")
+    return create_time
+
+
+def get_update_time(p):
+    """
+    p Path object
+    """
+    epoch_time = os.path.getmtime(p)
+    update_time = datetime.datetime.fromtimestamp(epoch_time).strftime("%Y-%m-%d %H:%M:%S")
+    return update_time
+
+
 def save_json(obj, file_path):
     with open(file_path, "w") as f:
         json.dump(obj, f, indent=2)
 
 
-def get_save_path(id):
-    save_path = os.path.join(os.getcwd(), "var/tmp", id)
-    return save_path
+def get_images(images_path):
+    images = []
+    for ext in allow_file:
+        images += list(images_path.glob("*."+ext))
+    return images
 
 
-def remove_save_path(id):
-    save_path = get_save_path(id)
-    if os.path.isdir(save_path):
-        shutil.rmtree(save_path)
-
-
-def get_content_type(name):
-    ext = name.split(".")[-1].lower()
-    if ext == "jpg":
-        ext = "jpeg"
-    content_type = "image/"+ext
-    return content_type
+################ data start########################
 
 def get_data_path(file_id):
     return Path(data_dir) / file_id
+
 
 def get_data_statistics(file_id):
     label_dir = Path(data_dir) / file_id / "labels"
@@ -149,6 +115,7 @@ def put_zip_file(file, file_id, is_expanding=False):
                 return {"status": "error"}
     return {"status": "success"}
 
+
 def put_data_info(new_data, file_id):
     p = Path(data_dir) / file_id
     info_path = p / "info"
@@ -157,6 +124,7 @@ def put_data_info(new_data, file_id):
     save_json(new_data, file_path)
     return get_data_info(p)
 
+
 def update_data_info(new_info, file_id):
     path = Path(data_dir) / file_id
     info = get_data_info(path)
@@ -164,101 +132,6 @@ def update_data_info(new_info, file_id):
         info[k] = v
     res = put_data_info(info, file_id)
     return res
-
-
-def get_model_info(model_id):
-    p = Path(model_dir) / model_id / "info" / "info.json"
-    with open(p, "r") as f:
-        body = json.load(f)
-    body["id"] = model_id
-    body["create_time"] = get_create_time(p)
-    body["update_time"] = get_update_time(p)
-    res = {
-        "status": "success",
-        "data_type": "detail",
-        "detail": body
-    }
-    return res
-
-
-def put_model_info(new_model, model_id):
-    info_dir = Path(model_dir) / model_id / "info"
-    os.makedirs(info_dir, exist_ok=True)
-    info_path = info_dir / "info.json"
-    save_json(new_model, info_path)
-    return get_model_info(model_id)
-
-def get_create_time(p):
-    """
-    p Path object
-    """
-    epoch_time = os.path.getctime(p)
-    create_time = datetime.datetime.fromtimestamp(epoch_time).strftime("%Y-%m-%d %H:%M:%S")
-    return create_time
-
-def get_update_time(p):
-    """
-    p Path object
-    """
-    epoch_time = os.path.getmtime(p)
-    update_time = datetime.datetime.fromtimestamp(epoch_time).strftime("%Y-%m-%d %H:%M:%S")
-    return update_time
-
-def get_model_list():
-    p = Path(model_dir)
-    p_list = [x for x in p.iterdir() if x.is_dir()]
-    length = len(p_list)
-    models = []
-    for j in p_list:
-        id = j.name
-        info = j / "info" / "info.json"
-        if info.exists():
-            with open(info, "r") as f:
-                body = json.load(f)
-            update_time = get_update_time(info)
-        else:
-            body = {}
-            update_time = get_update_time(j)
-
-        sum_path = j / "summaries"
-        chartData = {}
-        for t in sum_path.glob("*/*"):
-            name = t.parent.name # test or train
-            chartData[name] = {
-                "accuracy": [],
-                "loss": [],
-                "step": []
-            }
-            t_str = str(t)
-            for e in tf.train.summary_iterator(t_str):
-                if int(e.step):
-                    chartData[name]["step"].append(e.step)
-                for v in e.summary.value:
-                    if v.tag == 'accuracy_1':
-                        chartData[name]["accuracy"].append(v.simple_value)
-                    elif v.tag == 'loss_1':
-                        chartData[name]["loss"].append(v.simple_value)
-
-        create_time = get_create_time(j)
-        body["id"] = id
-        body["chartData"] = chartData
-        body["update_time"] = update_time
-        body["create_time"] = create_time
-        models.append(body)
-    res = {
-            "status": "success",
-            "data_type": "list",
-            "total": length,
-            "list": models
-    }
-    return res
-
-def get_images(images_path):
-    images = []
-    for ext in allow_file:
-        images += list(images_path.glob("*."+ext))
-    return images
-
 
 def get_data(data_id, offset, limit):
     p = Path(data_dir) / data_id
@@ -373,11 +246,106 @@ def delete_data(id):
     return res
 
 
+################ data endt########################
+
+
+################ model start########################
+
+def get_model_info(model_id):
+    p = Path(model_dir) / model_id / "info" / "info.json"
+    with open(p, "r") as f:
+        body = json.load(f)
+    body["id"] = model_id
+    body["create_time"] = get_create_time(p)
+    body["update_time"] = get_update_time(p)
+    res = {
+        "status": "success",
+        "data_type": "detail",
+        "detail": body
+    }
+    return res
+
+
+def put_model_info(new_model, model_id):
+    info_dir = Path(model_dir) / model_id / "info"
+    os.makedirs(info_dir, exist_ok=True)
+    info_path = info_dir / "info.json"
+    save_json(new_model, info_path)
+    return get_model_info(model_id)
+
+
+def get_model_list():
+    p = Path(model_dir)
+    p_list = [x for x in p.iterdir() if x.is_dir()]
+    length = len(p_list)
+    models = []
+    for j in p_list:
+        id = j.name
+        info = j / "info" / "info.json"
+        if info.exists():
+            with open(info, "r") as f:
+                body = json.load(f)
+            update_time = get_update_time(info)
+        else:
+            body = {}
+            update_time = get_update_time(j)
+
+        sum_path = j / "summaries"
+        chartData = {}
+        for t in sum_path.glob("*/*"):
+            name = t.parent.name # test or train
+            chartData[name] = {
+                "accuracy": [],
+                "loss": [],
+                "step": []
+            }
+            t_str = str(t)
+            for e in tf.train.summary_iterator(t_str):
+                if int(e.step):
+                    chartData[name]["step"].append(e.step)
+                for v in e.summary.value:
+                    if v.tag == 'accuracy_1':
+                        chartData[name]["accuracy"].append(v.simple_value)
+                    elif v.tag == 'loss_1':
+                        chartData[name]["loss"].append(v.simple_value)
+
+        create_time = get_create_time(j)
+        body["id"] = id
+        body["chartData"] = chartData
+        body["update_time"] = update_time
+        body["create_time"] = create_time
+        models.append(body)
+    res = {
+            "status": "success",
+            "data_type": "list",
+            "total": length,
+            "list": models
+    }
+    return res
+
+def delete_model(id):
+    p = Path(model_dir) / id
+    if os.path.isdir(p):
+        shutil.rmtree(p)
+    res = {
+        "status": "success",
+        "data_type": "delete"
+    }
+    return res
+
+
+################ model end ########################
+
+
+################ inference start ########################
+
+def get_inference_path(file_id):
+    return Path(inference_dir) / file_id
 
 def save_inference(file):
-    dir_name = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    dir_path = os.path.join(inference_dir, dir_name)
-    create_save_dir(dir_path)
+    dir_name = generate_id()
+    dir_path = get_inference_path(dir_name)
+    dir_path.mkdir()
     file_path = os.path.join(dir_path, "tmp.jpg")
     with open(file_path, "wb") as f:
         f.write(file)
@@ -399,6 +367,11 @@ def delete_inference(id):
         "data_type": "delete"
     }
     return res
+
+################ inference end ########################
+
+
+################ recipe start ########################
 
 
 
@@ -482,13 +455,4 @@ def delete_recipe(id):
     }
     return res
 
-
-def delete_model(id):
-    p = Path(model_dir) / id
-    if os.path.isdir(p):
-        shutil.rmtree(p)
-    res = {
-        "status": "success",
-        "data_type": "delete"
-    }
-    return res
+################ recipe end ########################

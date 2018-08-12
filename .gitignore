@@ -110,5 +110,6 @@ logs/
 src/data/*
 src/recipes/*
 coverage_html/
+inference/
 
 node_modules

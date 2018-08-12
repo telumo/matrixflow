@@ -779,7 +779,7 @@ window.onload = function() {
             "type": this.selectedInferenceType,
             "modelId": this.selectedModel.id,
             "recipeId": this.selectedModel.recipeId,
-            "filename": this.selectedInferenceFile.name,
+            "fileName": this.selectedInferenceFile.name,
             "fileSize": this.selectedInferenceFile.size
           };
           this.sendMessage(req);

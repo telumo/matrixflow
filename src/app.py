@@ -164,10 +164,10 @@ def handler(wsock, message):
             d["recipe_id"] = obj["recipeId"]
             d["inference_type"] = obj["type"]
             d["file_size"] = obj["fileSize"]
-            filename = obj["filename"]
-            d["filename"] = filename
+            file_name = obj["fileName"]
+            d["file_name"] = file_name
             log_info(d)
-            if "zip" == filename.split(".")[1]:
+            if "zip" == file_name.split(".")[1]:
                 action = "startUploadingInferenceZip"
                 d["action"] = "uploadingInferenceZip"
             else:
@@ -309,6 +309,7 @@ def handler(wsock, message):
             file_path = res["detail"]["file_path"]
             recipe_id = d["recipe_id"]
             model_id = d["model_id"]
+            file_name = d["file_name"]
             model = CNN(recipe_id)
             inference_type = d["inference_type"]
             if inference_type == "classification":
@@ -317,6 +318,7 @@ def handler(wsock, message):
             if inference_type == "vectorization":
                 inference_res = model.vectorize(model_id, file_path, is_similarity=False)
                 action = "finishVectorization"
+            inference_res[0]["image_name"] = file_name
             res = {
                 "list": inference_res,
                 "action": action

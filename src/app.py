@@ -280,7 +280,7 @@ def handler(wsock, message):
                     recipe_id = d["recipe_id"]
                     model = CNN(recipe_id)
                     inference_type = d["inference_type"]
-                    inference_res = model.inference(model_id, image_path)
+                    inference_res = model.categorize(model_id, image_path)
                     res = fm.get_inferece_images(image_path)
                     image_list = res["list"]
                     res_list = []
@@ -310,7 +310,7 @@ def handler(wsock, message):
             recipe_id = d["recipe_id"]
             model_id = d["model_id"]
             model = CNN(recipe_id)
-            inference_res = model.inference(model_id, file_path)
+            inference_res = model.categorize(model_id, file_path)
             res = {
                 "list": inference_res,
                 "action":  "finishInference"

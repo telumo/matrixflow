@@ -282,7 +282,10 @@ def handler(wsock, message):
                     inference_type = d["inference_type"]
                     if inference_type == "classification":
                         inference_res = model.classify(model_id, image_path)
-                        action = "finishCategorization"
+                        action = "finishClassfication"
+                    elif inference_type == "vectorization":
+                        inference_res = model.vectorize(model_id, image_path, is_similarity=True)
+                        action = "finishVectorization"
                     res = fm.get_inferece_images(image_path)
                     image_list = res["list"]
                     res_list = []
@@ -310,7 +313,10 @@ def handler(wsock, message):
             inference_type = d["inference_type"]
             if inference_type == "classification":
                 inference_res = model.classify(model_id, file_path)
-                action = "finishCategorization"
+                action = "finishClassfication"
+            if inference_type == "vectorization":
+                inference_res = model.vectorize(model_id, file_path, is_similarity=False)
+                action = "finishVectorization"
             res = {
                 "list": inference_res,
                 "action": action

@@ -804,6 +804,25 @@
             <b-col sm="2" class="text-sm-right"></b-col>
           </b-row>
 
+          <b-row class="mb-2" v-for="r in vectorizationResult" style="box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.4);">
+            <b-col sm="2" class="text-sm-right">${r.imageName}</b-col>
+            <b-col>
+              <b-row v-if="r.body">
+                <img :src="'data:image/png;base64,' + r.body" width="50%" height="50%">
+              </b-row>
+              <b-row v-else>
+                <img :src="inferencePreviewImg" width="75%" height="75%">
+              </b-row>
+            </b-col>
+
+            <b-col>
+              <b-row>${$t("inference.similarImages")}</b-row>
+              <row v-for="s in r.simliarities" style="float: left; margin: 5px;">
+                  <img :src="'data:image/png;base64,' + vectorizationResult[s.index].body" width="150" height="150">
+              </row>
+            </b-col>
+          </b-row>
+
         </b-card>
       </div>
 

@@ -54,7 +54,8 @@
       "vectorization": "ベクトル化",
       "dimRed": "次元圧縮",
       "data": "推論用データ",
-      "classifiResult": "分類結果"
+      "classifiResult": "分類結果",
+      "similarImages": "類似画像"
     },
     "data":{
       "id": "データID",
@@ -153,7 +154,8 @@
       "vectorization": "Vectorization",
       "dimRed": "Dimensionality reduction",
       "data": "Inference Data",
-      "classifiResult": "Classification Result"
+      "classifiResult": "Classification Result",
+      "similarImages": "Similar Images"
     },
     "data":{
       "id": "Deta ID",

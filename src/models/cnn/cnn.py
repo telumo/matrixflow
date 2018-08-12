@@ -9,6 +9,10 @@ import tensorflow as tf
 from tqdm import tqdm
 import numpy as np
 
+import scipy
+import scipy.spatial
+from scipy.spatial import distance
+
 import filemanager as fma
 from filemanager import put_model_info
 from ..recipe import Model
@@ -47,10 +51,49 @@ class CNN(Model):
         print('"target":["source"]')
         print(self.edge_dict)
 
+
     def classify(self, model_id, image_path, target_layer="fc_1/BiasAdd"):
         last_acvivation = tf.nn.softmax
-        res = self.inference(model_id, image_path, target_layer, last_acvivation)
+        vecs, cate, image_path_list = self.inference(model_id, image_path, target_layer, last_acvivation)
+        c = cate.tolist()
+        v = vecs.tolist()
+        res = [
+            {
+                "image_name": p.name,
+                "probability": v[i],
+                "category": c[i]
+            }
+            for i, p in enumerate(image_path_list)]
         return res
+
+
+    def vectorize(self, model_id, image_path, target_layer="fc_1/BiasAdd", is_similarity=True, n_sim=8):
+        last_acvivation = tf.identity
+        vecs, cate, image_path_list = self.inference(model_id, image_path, target_layer, last_acvivation)
+        c = cate.tolist()
+        v = vecs.tolist()
+        res = [
+            {
+                "image_name": p.name,
+                "vector": v[i],
+            }
+            for i, p in enumerate(image_path_list)]
+        if is_similarity:
+            pairwise = distance.squareform(distance.pdist(vecs, metric="cosine"))
+            for i, r in enumerate(res):
+                id_dist = self.similar_to(pairwise, img_id=i, num=_sim, distance=True)
+                sim_list = [{"index": int(t[0]), "image_name": res[t[0]]["image_name"], "distance": float(t[1])} for t in id_dist]
+                r["simliarities"] = sim_list
+        return res
+
+    def similar_to(self, pairwise, img_id, num=5, distance=False):
+        img = pairwise[img_id]
+        ids = np.argsort(img)[1: num+1]
+        if distance:
+            dist = np.sort(img)[1: num+1]
+            return [(x,y) for x, y in zip(ids, dist)]
+        else:
+            return ids
 
 
     def inference(self, model_id, image_path, target_layer, last_acvivation):
@@ -78,16 +121,7 @@ class CNN(Model):
                     [tf.argmax(vec, axis=1), last_acvivation(vec)], feed_dict={self.x: images})
                 print(cate)
                 print(vecs)
-        c = cate.tolist()
-        v = vecs.tolist()
-        res = [
-            {
-                "image_name": p.name,
-                "probability": v[i],
-                "category": c[i]
-            }
-        for i, p in enumerate(image_path_list)]
-        return res
+        return vecs, cate, image_path_list
 
     def build_nn(self):
         self._generate_edge_dict()

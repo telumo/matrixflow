@@ -453,7 +453,7 @@
 
       <div v-show="selectedMenu == 'learning'">
         <h2>${$t("tab.menu.learning")}</h2>
-        <b-card>
+        <b-card class="no-border">
           <b-row class="mb-2">
             <b-col sm="2" class="text-sm-right"><b>${$t("table.name")}:</b></b-col>
             <b-col>
@@ -740,7 +740,7 @@
 
       <div v-show="selectedMenu == 'inference'">
         <h2>${$t("tab.menu.inference")}</h2>
-        <b-card>
+        <b-card class="no-border">
 
           <b-row class="mb-2">
             <b-col sm="2" class="text-sm-right">

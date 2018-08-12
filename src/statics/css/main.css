@@ -71,6 +71,10 @@ table {
   height: 500px;
 }
 
+.no-border{
+  border-style: none;
+}
+
 .nowrap {
   white-space: nowrap;
 }

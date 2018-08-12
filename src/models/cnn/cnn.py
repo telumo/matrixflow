@@ -7,6 +7,7 @@ from pathlib import Path
 import networkx as nx
 import tensorflow as tf
 from tqdm import tqdm
+import numpy as np
 
 import filemanager as fma
 from filemanager import put_model_info
@@ -47,8 +48,15 @@ class CNN(Model):
         print(self.edge_dict)
 
     def inference(self, model_id, image_path):
+        if isinstance(image_path, str):
+            image_path = Path(image_path)
         ckpt_dir = Path(self.model_dir) / model_id / "checkpoints"
-        image = self.ima.imread(image_path)
+        if image_path.is_dir():
+            image_path_list = fma.get_images(image_path)
+            images = np.array([self.ima.imread(p)for p in image_path_list])
+        else:
+            image_path_list = [image_path]
+            images = [self.ima.imread(image_path)]
         latest_ckpt = tf.train.get_checkpoint_state(ckpt_dir).model_checkpoint_path
         with tf.Graph().as_default():
             sess = tf.Session()
@@ -61,13 +69,18 @@ class CNN(Model):
                         output = o
                 vec = output.values()[0]
                 cate, vecs = sess.run(
-                    [tf.argmax(vec, axis=1), tf.nn.softmax(vec)], feed_dict={self.x: [image]})
+                    [tf.argmax(vec, axis=1), tf.nn.softmax(vec)], feed_dict={self.x: images})
                 print(cate)
                 print(vecs)
-        res = {
-            "categories": cate.tolist(),
-            "vectors": vecs.tolist()
-        }
+        c = cate.tolist()
+        v = vecs.tolist()
+        res = [
+            {
+                "image_name": p.name,
+                "probability": v[i],
+                "category": c[i]
+            }
+        for i, p in enumerate(image_path_list)]
         return res
 
     def build_nn(self):

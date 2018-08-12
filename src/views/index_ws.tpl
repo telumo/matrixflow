@@ -741,6 +741,7 @@
       <div v-show="selectedMenu == 'inference'">
         <h2>${$t("tab.menu.inference")}</h2>
         <b-card>
+
           <b-row class="mb-2">
             <b-col sm="2" class="text-sm-right">
               <b>${$t("inference.model")}:</b>
@@ -749,6 +750,7 @@
               <b-form-select v-model="selectedModel" :options="modelOptions" class="w-50" />
             </b-col>
           </b-row>
+
           <b-row class="mb-2">
             <b-col sm="2" class="text-sm-right">
               <b>${$t("inference.type")}:</b>
@@ -757,6 +759,7 @@
               <b-form-select v-model="selectedInferenceType" :options="inferenceTypeOptions" class="w-50" />
             </b-col>
           </b-row>
+
           <b-row class="mb-2">
             <b-col sm="2" class="text-sm-right">
               <b>${$t("inference.data")}:</b>
@@ -765,38 +768,42 @@
               <b-form-file class="w-50 p-3 mb-1 bg-secondary" @change="selectInferenceFile" :disabled="!selectedModel || !selectedInferenceType"></b-form-file>
             </b-col>
           </b-row>
-          <b-row class="mb-2">
-            <b-col sm="2" class="text-sm-right"></b-col>
+
+            <p v-if="uploadInferenceZipProgress > 0">
+              <b-progress class="progress" height="30px" :value="uploadInferenceZipProgress" :max="selectedInferenceFile.size" show-progress animated></b-progress>
+            </p>
+
+          <b-row class="mb-2" v-for="r in inferenceResult" style="box-shadow: 3px 3px 3px 3px rgba(0,0,0,0.4);">
+            <b-col sm="2" class="text-sm-right">${r.imageName}</b-col>
             <b-col>
-              <div v-if="inferencePreviewImg">
-                <img :src="inferencePreviewImg" width="80%" height="80%">
-              </div>
+              <b-row v-if="r.body">
+                <img :src="'data:image/png;base64,' + r.body" width="50%" height="50%">
+              </b-row>
+              <b-row v-else>
+                <img :src="inferencePreviewImg" width="75%" height="75%">
+              </b-row>
+              <b-row class="mb-2">
+                <b-col sm="2" class="text-sm-right nowrap">
+                  <b>${$t("inference.classifiResult")}:</b>
+                </b-col>
+                <b-col>
+                  ${selectedModel.mapping[r.category]}
+                </b-col>
+              </b-row>
             </b-col>
             <b-col>
-              <div v-if="inferencePreviewImg">
               <chartjs-horizontal-bar
                 :datalabel="'Result'"
                 :labels="selectedModel.mapping"
-                :data="inferenceResult.vectors[0]"
+                :data="r.probability"
                 :bind="true"
                 :backgroundcolor="themeColor"
                 :bordercolor="themeColor">
               </chartjs-horizontal-bar>
-            </div>
-           </b-col>
-           <b-col sm="2" class="text-sm-right"></b-col>
-          </b-row>
-          <b-row class="mb-2">
-            <b-col sm="2" class="text-sm-right">
-              <b>${$t("inference.classifiResult")}:</b>
             </b-col>
-            <b-col>
-              <div v-if="inferenceResult.categories && selectedModel.mapping">
-                ${selectedModel.mapping[inferenceResult.categories[0]]}
-              </div>
-            </b-col>
+            <b-col sm="2" class="text-sm-right"></b-col>
           </b-row>
-          <b-row class="mb-2">
+
         </b-card>
       </div>
 

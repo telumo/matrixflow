@@ -62,10 +62,7 @@ window.onload = function() {
       selectedModel: "",
       selectedLearningData: "",
       inferenceLabels: ["0","1","2","3", "4", "5", "6", "7", "8", "9"],
-      inferenceResult: {
-        vectors: [[0,0,0,0,0,0,0,0,0,0]],
-        categories: []
-      },
+      inferenceResult: [],
       recipeFields: {},
       dataFields: {},
       modelFields: {},
@@ -115,6 +112,7 @@ window.onload = function() {
       chartOptions: {responsive: false, maintainAspectRatio: false},
       uploaded: false,
       progress: 0,
+      uploadInferenceZipProgress: 0,
       result: ""
     },
     methods: {
@@ -757,13 +755,18 @@ window.onload = function() {
       },
       selectInferenceFile: function(e){
         e.preventDefault();
-        reader = new FileReader();
-        let files = e.target.files;
+        this.inferencePreviewImg = "";
+        this.inferenceResult = [];
+        const files = e.target.files;
         this.selectedInferenceFile = files[0];
-        reader.onload = e => {
-          this.inferencePreviewImg = e.target.result;
-        };
-        reader.readAsDataURL(this.selectedInferenceFile);
+        const ext = this.selectedInferenceFile.name.split(".")[1]
+        if(ext != "zip"){
+          reader = new FileReader();
+          reader.onload = e => {
+            this.inferencePreviewImg = e.target.result;
+          };
+          reader.readAsDataURL(this.selectedInferenceFile);
+        }
 
         reader = new FileReader();
         reader.onload = e => {
@@ -772,7 +775,9 @@ window.onload = function() {
             "action": "inferenceImages",
             "type": this.selectedInferenceType,
             "modelId": this.selectedModel.id,
-            "recipeId": this.selectedModel.recipeId
+            "recipeId": this.selectedModel.recipeId,
+            "filename": this.selectedInferenceFile.name,
+            "fileSize": this.selectedInferenceFile.size
           };
           this.sendMessage(req);
         };
@@ -969,6 +974,7 @@ window.onload = function() {
       },
     },
     created: function(){
+      this.initRecipeLayers();
       this.initNewRecipe()
     },
     mounted: function (){
@@ -978,7 +984,6 @@ window.onload = function() {
       this.setActivationOptions();
       this.setInferenceTypeOptions();
       this.initCharts(this.newModel);
-      this.initRecipeLayers();
       this.languageOptions = [
         { value: "en", text: "English" },
         { value: "ja", text: "日本語" }
@@ -1108,12 +1113,15 @@ window.onload = function() {
           }else if (res["action"] == "startUploading") {
             this.parseFile(this.uploadFile, 100000);
 
-          }else if (res["action"] == "inferenceImages") {
+          }else if (res["action"] == "startUploadingInferenceZip") {
+            this.parseFile(this.selectedInferenceFile, 100000);
+
+          }else if (res["action"] == "inferenceSingleImage") {
             this.sendInferenceData();
 
           }else if (res["action"] == "finishInference") {
             console.log(res);
-            this.inferenceResult = res;
+            this.inferenceResult = res["list"];
             console.log(this.inferenceResult);
 
           }else if(res["action"] == "learning"){
@@ -1136,13 +1144,15 @@ window.onload = function() {
             const dataReq = {"action": "getDataList"};
             this.sendMessage(dataReq);
 
-          } else {
-            var loadedSize = res["loadedSize"]
-            if(loadedSize){
-              this.progress = loadedSize;
-            }else{
-              console.log(res);
-            }
+          } else if(res["action"] == "uploadingLearningData"){
+            this.progress = res["loadedSize"]
+
+          } else if(res["action"] == "uploadingInferenceZip"){
+            console.log(res["loadedSize"])
+            this.uploadInferenceZipProgress = res["loadedSize"]
+
+          }else{
+            console.log("Unknown action");
           }
       };
     }

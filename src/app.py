@@ -94,8 +94,9 @@ def handler(wsock, message):
         obj = json.loads(message)
         print(obj)
         if obj["action"] == "startUploading":
-            d["size"] = 0
+            d["uploading_size"] = 0
             d["uploading_file"] = bytearray()
+
             d["action"] = obj["action"]
             d["file_size"] = obj.get("fileSize", 0)
             d["name"] = obj.get("name", "")
@@ -155,15 +156,29 @@ def handler(wsock, message):
             send_message(wsock, res)
 
         elif obj["action"] == "inferenceImages":
-            d["action"] = obj["action"]
+            d["uploading_size"] = 0
+            d["uploading_file"] = bytearray()
+
+
             d["model_id"] = obj["modelId"]
             d["recipe_id"] = obj["recipeId"]
             d["inference_type"] = obj["type"]
+            d["file_size"] = obj["fileSize"]
+            filename = obj["filename"]
+            d["filename"] = filename
+            log_info(d)
+            if "zip" == filename.split(".")[1]:
+                action = "startUploadingInferenceZip"
+                d["action"] = "uploadingInferenceZip"
+            else:
+                action = "inferenceSingleImage"
+                d["action"] = action
 
             res = {
-                "action": obj["action"]
+                "action": action
             }
             send_message(wsock, res)
+
 
         elif obj["action"] == "deleteModel":
             model_id = obj["modelId"]
@@ -239,26 +254,55 @@ def handler(wsock, message):
         print(d["action"])
         if d["action"]  == "startUploading":
 
-            d["size"] += len(message)
-            log_info(d["size"])
-            d["uploading_file"] += message
-            res = {"status": "loading", "loadedSize": d["size"]}
-            time.sleep(0.05) # for the progress bar.
-            send_message(wsock, res)
-
-            if d["size"] == int(d["file_size"]):
+            def finished(d):
                 uploading_file = d["uploading_file"]
                 file_id = fm.generate_id()
                 result = fm.put_zip_file(uploading_file, file_id, is_expanding=True)
                 info =  fm.get_data_statistics(file_id)
                 info["name"] = d["name"]
                 info["description"] = d["description"]
-                fm.put_data_info(info, file_id)
-                del dictionary[str(wsock)]
-                log_info("delete wsock delete")
-                res = {"action": "uploaded", "fileId": file_id}
-                send_message(wsock, res)
-        elif d["action"] == "inferenceImages":
+                res = fm.put_data_info(info, file_id)
+                res["action"] = "uploaded"
+                return res
+
+            file_uploader(d, message, wsock, "uploadingLearningData", finished)
+
+        elif d["action"] == "uploadingInferenceZip":
+
+            def finished(d):
+                uploading_file = d["uploading_file"]
+                file_id = fm.generate_id()
+                result = fm.put_inference_zip(uploading_file, file_id, is_expanding=True)
+                log_info(result)
+                if result["status"] == "success":
+                    image_path = result["image_path"]
+                    model_id = d["model_id"]
+                    recipe_id = d["recipe_id"]
+                    model = CNN(recipe_id)
+                    inference_type = d["inference_type"]
+                    inference_res = model.inference(model_id, image_path)
+                    res = fm.get_inferece_images(image_path)
+                    image_list = res["list"]
+                    res_list = []
+                    for r, i in zip(inference_res, image_list):
+                        print("#####")
+                        print(r)
+                        print(i)
+                        print("#####")
+                        r["body"] = i["body"]
+                        res_list.append(r)
+
+                    #res["action"] = "finishMultipleInference"
+                    res = {
+                        "action": "finishInference",
+                        "id": file_id,
+                        "list": res_list
+                    }
+                return res
+
+            file_uploader(d, message, wsock, "uploadingInferenceZip", finished)
+
+        elif d["action"] == "inferenceSingleImage":
 
             res = fm.save_inference(message)
             file_id = res["detail"]["id"]
@@ -266,11 +310,33 @@ def handler(wsock, message):
             recipe_id = d["recipe_id"]
             model_id = d["model_id"]
             model = CNN(recipe_id)
-            res = model.inference(model_id, file_path)
-            res["action"] = "finishInference"
+            inference_res = model.inference(model_id, file_path)
+            res = {
+                "list": inference_res,
+                "action":  "finishInference"
+            }
             fm.delete_inference(file_id)
             del dictionary[str(wsock)]
             send_message(wsock, res)
+
+
+
+def file_uploader(d, message, wsock , action, finished_func):
+    d["uploading_size"] += len(message)
+    d["uploading_file"] += message
+    res = {"status": "loading", "loadedSize": d["uploading_size"], "action": action}
+    time.sleep(0.05) # for the progress bar.
+    log_info(d["uploading_size"])
+    log_info(action)
+    send_message(wsock, res)
+
+    if d["uploading_size"] == int(d["file_size"]):
+        res = finished_func(d)
+        del dictionary[str(wsock)]
+        log_info("delete wsock delete")
+        res["fileId"] = res.pop("id")
+        send_message(wsock, res)
+
 
 
 

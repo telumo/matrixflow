@@ -368,6 +368,54 @@ def delete_inference(id):
     }
     return res
 
+def get_inferece_images(image_path):
+    images = get_images(image_path)
+    target_images = images # for offset and limit
+    length = len(images)
+    dic_list = [{
+        "name": path.name,
+        "body": base64.encodestring(open(path, 'rb').read()).decode("utf-8"),
+        } for path in target_images]
+    res = {
+        "status": "success",
+        "data_type": "list",
+        "total": length,
+        "list": dic_list
+    }
+    return res
+
+
+def put_inference_zip(file, file_id, is_expanding=False):
+    """
+      file: bitearray
+      file_id: string
+    """
+    p = get_inference_path(file_id)
+    tmp = p / "tmp"
+    tmp.mkdir(parents=True)
+    file_path = tmp / "data.zip"
+    with open(file_path, "wb") as f:
+        f.write(file)
+
+    if is_expanding:
+        with zipfile_utf8.ZipFile(file_path) as zf:
+            try:
+                zf.extractall(tmp)
+                image_dir =tmp.glob("*/images")
+                d =  next(image_dir)
+                os.rename(d, p / "images")
+                shutil.rmtree(tmp)
+
+            except Exception as e:
+                shutil.rmtree(tmp)
+                print(e)
+                return {"status": "error"}
+    return {
+        "status": "success",
+        "file_path": p,
+        "image_path": p / "images"
+    }
+
 ################ inference end ########################
 
 

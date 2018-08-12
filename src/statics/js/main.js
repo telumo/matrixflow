@@ -62,7 +62,7 @@ window.onload = function() {
       selectedModel: "",
       selectedLearningData: "",
       inferenceLabels: ["0","1","2","3", "4", "5", "6", "7", "8", "9"],
-      inferenceResult: [],
+      classficationResult: [],
       recipeFields: {},
       dataFields: {},
       modelFields: {},
@@ -756,7 +756,7 @@ window.onload = function() {
       selectInferenceFile: function(e){
         e.preventDefault();
         this.inferencePreviewImg = "";
-        this.inferenceResult = [];
+        this.classficationResult = [];
         this.uploadInferenceZipProgress = 0
         const files = e.target.files;
         this.selectedInferenceFile = files[0];
@@ -1120,10 +1120,8 @@ window.onload = function() {
           }else if (res["action"] == "inferenceSingleImage") {
             this.sendInferenceData();
 
-          }else if (res["action"] == "finishInference") {
-            console.log(res);
-            this.inferenceResult = res["list"];
-            console.log(this.inferenceResult);
+          }else if (res["action"] == "finishCategorization") {
+            this.classficationResult = res["list"];
 
           }else if(res["action"] == "learning"){
             this.learningNumIter = res["nIter"]

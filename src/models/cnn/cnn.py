@@ -47,7 +47,7 @@ class CNN(Model):
         print('"target":["source"]')
         print(self.edge_dict)
 
-    def categorize(self, model_id, image_path, target_layer="fc_1/BiasAdd"):
+    def classify(self, model_id, image_path, target_layer="fc_1/BiasAdd"):
         last_acvivation = tf.nn.softmax
         res = self.inference(model_id, image_path, target_layer, last_acvivation)
         return res

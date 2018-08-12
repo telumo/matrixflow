@@ -280,21 +280,18 @@ def handler(wsock, message):
                     recipe_id = d["recipe_id"]
                     model = CNN(recipe_id)
                     inference_type = d["inference_type"]
-                    inference_res = model.categorize(model_id, image_path)
+                    if inference_type == "classification":
+                        inference_res = model.classify(model_id, image_path)
+                        action = "finishCategorization"
                     res = fm.get_inferece_images(image_path)
                     image_list = res["list"]
                     res_list = []
                     for r, i in zip(inference_res, image_list):
-                        print("#####")
-                        print(r)
-                        print(i)
-                        print("#####")
                         r["body"] = i["body"]
                         res_list.append(r)
 
-                    #res["action"] = "finishMultipleInference"
                     res = {
-                        "action": "finishInference",
+                        "action": action,
                         "id": file_id,
                         "list": res_list
                     }
@@ -310,10 +307,13 @@ def handler(wsock, message):
             recipe_id = d["recipe_id"]
             model_id = d["model_id"]
             model = CNN(recipe_id)
-            inference_res = model.categorize(model_id, file_path)
+            inference_type = d["inference_type"]
+            if inference_type == "classification":
+                inference_res = model.classify(model_id, file_path)
+                action = "finishCategorization"
             res = {
                 "list": inference_res,
-                "action":  "finishInference"
+                "action": action
             }
             fm.delete_inference(file_id)
             del dictionary[str(wsock)]

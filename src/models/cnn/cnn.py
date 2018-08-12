@@ -47,7 +47,13 @@ class CNN(Model):
         print('"target":["source"]')
         print(self.edge_dict)
 
-    def inference(self, model_id, image_path):
+    def categorize(self, model_id, image_path, target_layer="fc_1/BiasAdd"):
+        last_acvivation = tf.nn.softmax
+        res = self.inference(model_id, image_path, target_layer, last_acvivation)
+        return res
+
+
+    def inference(self, model_id, image_path, target_layer, last_acvivation):
         if isinstance(image_path, str):
             image_path = Path(image_path)
         ckpt_dir = Path(self.model_dir) / model_id / "checkpoints"
@@ -65,11 +71,11 @@ class CNN(Model):
                 saver = tf.train.Saver()
                 saver.restore(sess, latest_ckpt)
                 for o in sess.graph.get_operations():
-                    if o.name == "fc_1/BiasAdd":
+                    if o.name == target_layer:
                         output = o
                 vec = output.values()[0]
                 cate, vecs = sess.run(
-                    [tf.argmax(vec, axis=1), tf.nn.softmax(vec)], feed_dict={self.x: images})
+                    [tf.argmax(vec, axis=1), last_acvivation(vec)], feed_dict={self.x: images})
                 print(cate)
                 print(vecs)
         c = cate.tolist()

@@ -81,7 +81,7 @@ class CNN(Model):
         if is_similarity:
             pairwise = distance.squareform(distance.pdist(vecs, metric="cosine"))
             for i, r in enumerate(res):
-                id_dist = self.similar_to(pairwise, img_id=i, num=_sim, distance=True)
+                id_dist = self.similar_to(pairwise, img_id=i, num=n_sim, distance=True)
                 sim_list = [{"index": int(t[0]), "image_name": res[t[0]]["image_name"], "distance": float(t[1])} for t in id_dist]
                 r["simliarities"] = sim_list
         return res

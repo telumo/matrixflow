@@ -757,6 +757,7 @@ window.onload = function() {
         e.preventDefault();
         this.inferencePreviewImg = "";
         this.inferenceResult = [];
+        this.uploadInferenceZipProgress = 0
         const files = e.target.files;
         this.selectedInferenceFile = files[0];
         const ext = this.selectedInferenceFile.name.split(".")[1]

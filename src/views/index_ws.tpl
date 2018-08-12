@@ -773,7 +773,7 @@
               <b-progress class="progress" height="30px" :value="uploadInferenceZipProgress" :max="selectedInferenceFile.size" show-progress animated></b-progress>
             </p>
 
-          <b-row class="mb-2" v-for="r in inferenceResult" style="box-shadow: 3px 3px 3px 3px rgba(0,0,0,0.4);">
+          <b-row class="mb-2" v-for="r in inferenceResult" style="box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.4);">
             <b-col sm="2" class="text-sm-right">${r.imageName}</b-col>
             <b-col>
               <b-row v-if="r.body">

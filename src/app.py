@@ -1,43 +1,43 @@
-from bottle import request, Bottle, run, template, static_file
+from bottle import request, Bottle, template, static_file, abort
 
 import json
-import os
-import sys
 import time
 from argparse import ArgumentParser
 
-#sys.path.append(os.getcwd() + '/domain')
+# sys.path.append(os.getcwd() + '/domain')
 
 from response import put_response
 from log import log_info
-#from getface import cutout_face, get_face_image_name, circumscribe_face
-#from prob import Prob
+# from getface import cutout_face, get_face_image_name, circumscribe_face
+# from prob import Prob
 import filemanager as fm
-#html_path = "../static/html/"
+# html_path = "../static/html/"
 from utils import camel2snake, snake2camel, convert
 
 from gevent.pywsgi import WSGIServer
 import gevent
 from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
-from multiprocessing import Process
 from models.cnn.cnn import CNN
 
 app = Bottle()
 dictionary = {}
 
+
 @app.route('/')
 def index_html():
-    #return template("index")
     return template("index_ws")
+
 
 @app.route("/test")
 def index():
     return static_file('/views/index_2.html', root='./')
 
+
 @app.route("/statics/<filepath:path>")
 def statics(filepath):
     return static_file(filepath, root="./statics")
+
 
 @app.route('/recipes', method="GET")
 def get_recipes_list():
@@ -45,6 +45,7 @@ def get_recipes_list():
     limit = request.params.get("limit")
     res = fm.get_recipe_list(offset, limit)
     return put_response(res)
+
 
 @app.route('/recipes', method="POST")
 def add_recipe():
@@ -56,10 +57,12 @@ def add_recipe():
         res = {"status": "error"}
     return put_response(res)
 
+
 @app.route('/recipes/<recipe_id>', method="GET")
 def get_recipe(recipe_id):
     res = fm.get_recipe(recipe_id)
     return put_response(res)
+
 
 @app.route('/recipes/<recipe_id>', method="PUT")
 def update_recipe(recipe_id):
@@ -71,6 +74,7 @@ def update_recipe(recipe_id):
         res = {"status": "error"}
     return put_response(res)
 
+
 @app.route('/recipes/<recipe_id>', method="DELETE")
 def delete_recipe(recipe_id):
     res = fm.delete_recipe(recipe_id)
@@ -81,6 +85,7 @@ def send_message(wsock, obj):
     res = convert(obj, snake2camel)
     res_json = json.dumps(res)
     wsock.send(res_json)
+
 
 def handler(wsock, message):
     if str(wsock) not in dictionary:
@@ -159,7 +164,6 @@ def handler(wsock, message):
             d["uploading_size"] = 0
             d["uploading_file"] = bytearray()
 
-
             d["model_id"] = obj["modelId"]
             d["recipe_id"] = obj["recipeId"]
             d["inference_type"] = obj["type"]
@@ -178,7 +182,6 @@ def handler(wsock, message):
                 "action": action
             }
             send_message(wsock, res)
-
 
         elif obj["action"] == "deleteModel":
             model_id = obj["modelId"]
@@ -252,13 +255,13 @@ def handler(wsock, message):
 
     except (UnicodeDecodeError, json.decoder.JSONDecodeError):
         print(d["action"])
-        if d["action"]  == "startUploading":
+        if d["action"] == "startUploading":
 
             def finished(d):
                 uploading_file = d["uploading_file"]
                 file_id = fm.generate_id()
                 result = fm.put_zip_file(uploading_file, file_id, is_expanding=True)
-                info =  fm.get_data_statistics(file_id)
+                info = fm.get_data_statistics(file_id)
                 info["name"] = d["name"]
                 info["description"] = d["description"]
                 res = fm.put_data_info(info, file_id)
@@ -328,12 +331,11 @@ def handler(wsock, message):
             send_message(wsock, res)
 
 
-
-def file_uploader(d, message, wsock , action, finished_func):
+def file_uploader(d, message, wsock, action, finished_func):
     d["uploading_size"] += len(message)
     d["uploading_file"] += message
     res = {"status": "loading", "loadedSize": d["uploading_size"], "action": action}
-    time.sleep(0.05) # for the progress bar.
+    time.sleep(0.05)  # for the progress bar.
     log_info(d["uploading_size"])
     log_info(action)
     send_message(wsock, res)
@@ -344,8 +346,6 @@ def file_uploader(d, message, wsock , action, finished_func):
         log_info("delete wsock delete")
         res["fileId"] = res.pop("id")
         send_message(wsock, res)
-
-
 
 
 @app.route('/connect')
@@ -363,12 +363,6 @@ def handle_websocket():
             break
 
 
-
-
-
-
-
-
 @app.route('/upload', method="POST")
 def upload_file():
     files = request.files
@@ -377,16 +371,17 @@ def upload_file():
         name = res["detail"]["name"]
         id = res["detail"]["id"]
         save_path = fm.get_save_path(id)
-        cutout_res = cutout_face(save_path,name,save_path)
+        cutout_res = cutout_face(save_path, name, save_path)
         if cutout_res["status"] == "error":
             return put_response(cutout_res)
         else:
             res["detail"]["faceTotal"] = cutout_res["detail"]["number"]
-        circum_res = circumscribe_face(save_path,name,save_path)
+        circum_res = circumscribe_face(save_path, name, save_path)
         if circum_res["status"] == "error":
             return put_response(circum_res)
     print(res)
     return put_response(res)
+
 
 @app.route('/images/<image_id>/face/<number>', method="GET")
 def get_face(image_id, number):
@@ -396,6 +391,7 @@ def get_face(image_id, number):
     content_type = fm.get_content_type(fullpath)
     return put_response(image, content_type=content_type)
 
+
 @app.route('/images/<image_id>/rectangle', method="GET")
 def get_rectangle(image_id):
     fullpath = get_face_image_name(image_id,type="rect")
@@ -404,21 +400,24 @@ def get_rectangle(image_id):
     content_type = fm.get_content_type(fullpath)
     return put_response(image, content_type=content_type)
 
+
 @app.route('/images/<image_id>/rectangle/indiviual/<number>', method="GET")
 def get_rectangle_indiviual(image_id, number):
     name = get_face_image_name(image_id, type="rect", full_path=False)
     save_path = fm.get_save_path(image_id)
     res = circumscribe_face(save_path, name[5:], save_path, int(number))
-    fullpath = save_path + "/" + name;
+    fullpath = save_path + "/" + name
     with open(fullpath) as f:
         image = f.read()
     content_type = fm.get_content_type(fullpath)
     return put_response(image, content_type=content_type)
 
+
 @app.route('/images/<image_id>/probability', method="GET")
 def get_probability(image_id):
     res = prob.get_prob(image_id)
     return put_response(res)
+
 
 @app.route('/static/<file_type>/<file>')
 def read_static(file_type, file):
@@ -431,6 +430,7 @@ def read_static(file_type, file):
     with open('../static/'+file_type+'/'+file) as f:
         data = f.read()
     return put_response(data=data, content_type=content_type)
+
 
 if __name__ == '__main__':
     parser = ArgumentParser()

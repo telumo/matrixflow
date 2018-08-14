@@ -39,7 +39,7 @@
   </head>
   <body>
     <div id="app" style="visibility : hidden">
-    <b-navbar toggleable="md" type="dark" class="nav-main" fixed="top" :sticky=true>
+    <b-navbar toggleable="md" type="dark" class="nav-main" fixed="top" :sticky="true">
       <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
       <b-navbar-brand>MatrixFlow</b-navbar-brand>
 
@@ -61,6 +61,7 @@
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
+
     <div v-show="selectedMenu == 'data'">
       <h2>${$t("tab.menu.data")}</h2>
       <div>
@@ -96,7 +97,7 @@
           <b-row class="mb-2">
             <b-col sm="3" class="text-sm-right"><b>${$t("table.description")}:</b></b-col>
             <b-col>
-              <b-form-textarea v-model="newData.description" placeholder="" :rows="3" :max-rows="6">
+              <b-form-textarea v-model="newData.description" placeholder="" :rows="3" :max-rows="6"></b-form-textarea>
             </b-col>
           </b-row>
           <b-row class="mb-2">
@@ -157,7 +158,7 @@
                 ${ row.item.description }
               </b-col>
               <b-col v-if="row.item.mode == 'edit'">
-                <b-form-textarea v-model="row.item.description" placeholder="" :rows="3" :max-rows="6">
+                <b-form-textarea v-model="row.item.description" placeholder="" :rows="3" :max-rows="6"></b-form-textarea>
               </b-col>
             </b-row>
             <b-row class="mb-2">
@@ -254,7 +255,7 @@
               <b-row class="mb-2">
                 <b-col sm="3" class="text-sm-right"><b>${$t("table.description")}:</b></b-col>
                 <b-col>
-                  <b-form-textarea v-model="newRecipe.info.description" placeholder="" :rows="3" :max-rows="6">
+                  <b-form-textarea v-model="newRecipe.info.description" placeholder="" :rows="3" :max-rows="6"></b-form-textarea>
                 </b-col>
               </b-row>
               <b-row class="mb-2">
@@ -269,9 +270,11 @@
               </b-row>
 
               <b-row class="mb-2">
+
                 <b-col sm="3" class="text-sm-center">
                   <b-button @click.stop="resetZoom(newRecipe)" size="sm"> ${$t("button.resetZoom")} </b-button>
                   <b-button @click.stop="resetPan(newRecipe)" size="sm"> ${$t("button.resetPan")}</b-button>
+
                   <div class="layer-info">
                     <b-row>
                       <b-col class="text-sm-right">
@@ -291,7 +294,7 @@
                     </b-row>
                     <div v-for="(p, k) in newRecipe.tappedLayer.data().params">
 
-                      <b-row v-else-if="k == 'act'">
+                      <b-row v-if="k == 'act'">
                         <b-col class="text-sm-right">
                           ${$t("recipe.activation")} :
                         </b-col>
@@ -304,12 +307,16 @@
                         <b-col class="text-sm-right">
                           ${k} :
                         </b-col>
-                        <b-col class="text-sm-left">
+                        <b-col class="text-sm-left" v-if="k != 'shape'">
                           <b-form-input v-model="newRecipe.tappedLayer.data().params[k]" type="number" size="sm"></b-form-input>
+                        </b-col>
+                        <b-col class="text-sm-left" v-else>
+                          ${p}
                         </b-col>
                       </b-row>
 
                     </div>
+
                     <b-list-group v-for="node in newRecipe.tappedLayer.neighborhood('node')">
                       <b-list-group-item v-if="node.data">
                         ${node.data().name} (${node.data().id})
@@ -320,8 +327,10 @@
                       <b-button @click.stop="clickNode(newRecipe.graph, newRecipe.tappedLayer)">${$t("button.addEdge")}</b-button>
                       <b-button @click.stop="deleteNode(newRecipe.tappedLayer.data().id)">${$t("button.delete")}</b-button>
                     </div>
+
                   </div>
                 </b-col>
+
                 <b-col>
                   <draggable class="drop-graph" :options="{group:'ITEMS'}" style="display: none;">
                     <div></div>
@@ -331,6 +340,8 @@
                   </div>
                 </b-col>
               </b-row>
+
+
               <b-row class="mb-2">
                 <b-button v-on:click="addRecipe" v-bind:disabled="!newRecipe.info.name">${$t("button.save")}</b-button>
               </b-row>
@@ -395,7 +406,7 @@
                   ${ row.item.body.info.description }
                 </b-col>
                 <b-col v-if="row.item.mode=='edit'">
-                  <b-form-textarea v-model="row.item.body.info.description" placeholder="" :rows="3" :max-rows="6">
+                  <b-form-textarea v-model="row.item.body.info.description" placeholder="" :rows="3" :max-rows="6"></b-form-textarea>
                 </b-col>
               </b-row>
 
@@ -417,7 +428,7 @@
                 </b-col>
               </b-row>
 
-              <b-row v-if=false>
+              <b-row v-if="false">
                 <b-col sm="3" class="text-sm-right"></b-col>
                 <b-col>
                   <b-form-textarea :value="json2String(row.item.body)"></b-form-textarea>
@@ -469,7 +480,7 @@
               <b>${$t("table.description")}:</b>
             </b-col>
             <b-col>
-              <b-form-textarea v-model="newModel.description" placeholder="" :rows="3" :max-rows="6" class="w-50">
+              <b-form-textarea v-model="newModel.description" placeholder="" :rows="3" :max-rows="6" class="w-50"></b-form-textarea>
             </b-col>
           </b-row>
           <b-row class="mb-2">
@@ -515,7 +526,7 @@
             <b-col sm="2" class="text-sm-right">
             </b-col>
             <b-col v-b-toggle.learning-config>
-              <i class="fa fa-gear" style="font-size:36px; align=left"></i>
+              <i class="fa fa-gear" style="font-size:36px;"></i>
             </b-col>
           </b-row>
           <b-collapse id="learning-config" class="mt-2">
@@ -572,7 +583,7 @@
         <draggable @choose="dragChoose" @end="dragEnd" v-on:blur="dragBlur">
           <div v-for="c in newModel.charts">
             <div>
-              <line-chart :chart-data=c :options=chartOptions :width="500" style="float: left;"></line-chart>
+              <line-chart :chart-data="c" :options="chartOptions" :width="500" style="float: left;"></line-chart>
             </div>
           </div>
         </draggable>
@@ -656,7 +667,7 @@
                   ${ row.item.description }
                 </b-col>
                 <b-col v-if="row.item.mode == 'edit'">
-                  <b-form-textarea v-model="row.item.description" placeholder="" :rows="3" :max-rows="6" class="w-50">
+                  <b-form-textarea v-model="row.item.description" placeholder="" :rows="3" :max-rows="6" class="w-50"></b-form-textarea>
                 </b-col>
               </b-row>
 
@@ -703,7 +714,7 @@
                 <draggable @choose="dragChoose" @end="dragEnd" v-on:blur="dragBlur">
                   <div v-for="c in row.item.charts">
                     <div>
-                      <line-chart :chart-data=c :options=chartOptions :width="500" class="chart"></line-chart>
+                      <line-chart :chart-data="c" :options="chartOptions" :width="500" class="chart"></line-chart>
                     </div>
                   </div>
                 </draggable>

@@ -425,8 +425,8 @@ def put_inference_zip(file, file_id, is_expanding=False):
 
 def save_recipe(obj):
     dir_name = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    dir_path = os.path.join(recipe_dir, dir_name)
-    create_save_dir(dir_path)
+    dir_path = Path(recipe_dir) / dir_name
+    dir_path.mkdir()
     file_path = os.path.join(dir_path, "recipe.json")
     save_json(obj, file_path)
     res = {

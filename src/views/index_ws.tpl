@@ -4,6 +4,9 @@
     <title>MatrixFlow</title>
     <link rel="icon" href="statics/img/favicon.ico" sizes="32x32">
 
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+
     <!-- Add this to <head> -->
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css"/>
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"/>
@@ -31,6 +34,7 @@
     <script src="//cdn.jsdelivr.net/npm/sortablejs@1.7.0/Sortable.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.16.0/vuedraggable.min.js"></script>
     <script src="statics/js/main.js"></script>
+
 
   </head>
   <body>
@@ -822,7 +826,7 @@
               </row>
             </b-col>
           </b-row>
-
+          <div id="scatter"></div>
         </b-card>
       </div>
 

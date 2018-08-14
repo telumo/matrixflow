@@ -64,6 +64,7 @@ window.onload = function() {
       inferenceLabels: ["0","1","2","3", "4", "5", "6", "7", "8", "9"],
       classficationResult: [],
       vectorizationResult: [],
+      dimRedResult: [],
       recipeFields: {},
       dataFields: {},
       modelFields: {},
@@ -828,6 +829,207 @@ window.onload = function() {
           {value: "ident", text: i18n.t("activation.ident")}
         ];
       },
+      show2D: function(data){
+        /*
+        var data = [
+          {
+            "imageName": "@name@",
+            "vector":[ -6.258190828419952, -21.277623406861302],
+            "body": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0a\nHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wAALCAAcABwBAREA/8QAHwAAAQUBAQEB\nAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1Fh\nByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZ\nWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXG\nx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oACAEBAAA/APn+iiituw8LandzH7Rb\nT2VqiebLczwPtRMgA4AyxJKgAdSR0HNdBbeDvD+qyLa6fq99bXbDCLqFoUEjemRwOfcn0zXO654U\n1vw7qL2OpadPFKOVbyyVkH95TjkVmNa3CEboJRnnlDV+DxPrtqEEGsX0YT7m2dht+nNXP+E78V7S\nreIdRYHqHnLZ6+v1pU8eeKkTYuuXYXqV3cH8Pwqpc+KNcvJFe41S5dlXaDvxx17fWsiiiiv/2Q==\n"
+          }];
+          */
+        var margin = { top: 50, right: 300, bottom: 50, left: 50 },
+            //outerWidth = 1050,
+            //outerHeight = 500,
+            outerWidth = screen.width-100,
+            outerHeight = screen.height-200;
+            width = outerWidth - margin.left - margin.right,
+            height = outerHeight - margin.top - margin.bottom;
+
+        var x = d3.scale.linear().range([0, width]).nice();
+
+        var y = d3.scale.linear().range([height, 0]).nice();
+
+        var xCat = "x",
+            yCat = "y",
+            rCat = "x"
+            colorCat = "Manufacturer";
+
+          data.forEach(function(d) {
+               d.vector[0] = +d.vector[0];
+               d.vector[1] = +d.vector[1];
+          });
+
+          var xMax = d3.max(data, function(d) { return d.vector[0]; }) * 1.05,
+              xMin = d3.min(data, function(d) { return d.vector[0]; }),
+              xMin = xMin > 0 ? 0 : xMin,
+              yMax = d3.max(data, function(d) { return d.vector[1]; }) * 1.05,
+              yMin = d3.min(data, function(d) { return d.vector[1]; }),
+              yMin = yMin > 0 ? 0 : yMin;
+
+          x.domain([xMin, xMax]);
+          y.domain([yMin, yMax]);
+
+          var xAxis = d3.svg.axis()
+              .scale(x)
+              .orient("bottom")
+              .tickSize(-height);
+
+          var yAxis = d3.svg.axis()
+              .scale(y)
+              .orient("left")
+              .tickSize(-width);
+
+          var color = d3.scale.category10();
+
+          var tip = d3.tip()
+              .attr("class", "d3-tip")
+              .offset([-10, 0])
+              .html(function(d) {
+                return d.imageName + "<br/>"+ "x: " + d.vector[0] + "<br>" + "y: " + d.vector[1];
+              });
+
+          var zoomBeh = d3.behavior.zoom()
+              .x(x)
+              .y(y)
+              .scaleExtent([0, 500])
+              .on("zoom", zoom);
+
+          var svg = d3.select("#scatter")
+            .append("svg")
+              .attr("width", outerWidth)
+              .attr("height", outerHeight)
+            .append("g")
+              .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+              .call(zoomBeh);
+
+          svg.call(tip);
+
+          svg.append("rect")
+              .attr("width", width)
+              .attr("height", height);
+
+          svg.append("g")
+              .classed("x axis", true)
+              .attr("transform", "translate(0," + height + ")")
+              .call(xAxis)
+            .append("text")
+              .classed("label", true)
+              .attr("x", width)
+              .attr("y", margin.bottom - 10)
+              .style("text-anchor", "end")
+
+          svg.append("g")
+              .classed("y axis", true)
+              .call(yAxis)
+            .append("text")
+              .classed("label", true)
+              .attr("transform", "rotate(-90)")
+              .attr("y", -margin.left)
+              .attr("dy", ".71em")
+              .style("text-anchor", "end")
+
+          var objects = svg.append("svg")
+              .classed("objects", true)
+              .attr("width", width)
+              .attr("height", height);
+
+          objects.append("svg:line")
+              .classed("axisLine hAxisLine", true)
+              .attr("x1", 0)
+              .attr("y1", 0)
+              .attr("x2", width)
+              .attr("y2", 0)
+              .attr("transform", "translate(0," + height + ")");
+
+          objects.append("svg:line")
+              .classed("axisLine vAxisLine", true)
+              .attr("x1", 0)
+              .attr("y1", 0)
+              .attr("x2", 0)
+              .attr("y2", height);
+
+          objects.selectAll(".dot")
+              .data(data)
+              .enter()
+              .append("svg:image")
+              .classed("dot", true)
+              .attr("dy", ".5em")
+              .attr("transform", transform)
+              .attr("xlink:href", function(d){
+                  //var name = d.vocab.split("/")[2];
+                  //var url= "https://s3-ap-northeast-1.amazonaws.com/image-recommender/test/"+name;
+                  var url = 'data:image/png;base64,' + d.body;
+                  return url;
+              })
+              .on("mouseover", tip.show)
+              .on("mouseout", tip.hide);
+              /*
+              .text(function(d) { return d.vocab; })
+
+              */
+
+          /*
+          objects.selectAll(".dot")
+              .data(data)
+              .enter()
+              .append("circle")
+              .classed("dot", true)
+              .attr("r", 5)
+              .attr("transform", transform)
+              .style("fill", function(d) { return color(d[colorCat]); })
+              .on("mouseover", tip.show)
+           */
+
+          /*
+          var legend = svg.selectAll(".legend")
+              .data(color.domain())
+            .enter().append("g")
+              .classed("legend", true)
+              .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+          legend.append("circle")
+              .attr("r", 3.5)
+              .attr("cx", width + 20)
+              .attr("fill", color);
+
+          legend.append("text")
+              .attr("x", width + 26)
+              .attr("dy", ".35em")
+              .text(function(d) { return d; });
+          */
+
+          d3.select("input").on("click", change);
+
+          function change() {
+            xCat = "Carbs";
+            xMax = d3.max(data, function(d) { return d.vector[0]; });
+            xMin = d3.min(data, function(d) { return d.vector[0]; });
+
+            zoomBeh.x(x.domain([xMin, xMax])).y(y.domain([yMin, yMax]));
+
+            var svg = d3.select("#scatter").transition();
+
+            svg.select(".x.axis").duration(750).call(xAxis).select(".label").text(xCat);
+
+            objects.selectAll(".dot").transition().duration(1000).attr("transform", transform);
+          }
+
+        function zoom() {
+          svg.select(".x.axis").call(xAxis);
+          svg.select(".y.axis").call(yAxis);
+
+          svg.selectAll(".dot")
+              .attr("transform", transform);
+        }
+
+        function transform(d) {
+          if(d.vector[0] && d.vector[1]){
+            return "translate(" + x(d.vector[0]) + "," + y(d.vector[1]) + ")";
+          }
+        }
+
+      },
       setRecipeFields: function(){
         this.recipeFields = {
           id: {
@@ -940,6 +1142,9 @@ window.onload = function() {
             this.buildGraph(this.newRecipe, "-new");
           });
         }
+      },
+      dimRedResult: function(newR, oldR){
+        this.show2D(newR);
       }
     },
 
@@ -987,6 +1192,8 @@ window.onload = function() {
       this.setActivationOptions();
       this.setInferenceTypeOptions();
       this.initCharts(this.newModel);
+      //this.show2D();
+
       this.languageOptions = [
         { value: "en", text: "English" },
         { value: "ja", text: "日本語" }
@@ -1127,6 +1334,9 @@ window.onload = function() {
 
           }else if (res["action"] == "finishVectorization") {
             this.vectorizationResult = res["list"];
+
+          }else if (res["action"] == "finishDimRed") {
+            this.dimRedResult = res["list"];
 
           }else if(res["action"] == "learning"){
             this.learningNumIter = res["nIter"]

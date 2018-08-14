@@ -8,6 +8,7 @@ import networkx as nx
 import tensorflow as tf
 from tqdm import tqdm
 import numpy as np
+import bhtsne
 
 import scipy
 import scipy.spatial
@@ -70,7 +71,6 @@ class CNN(Model):
     def vectorize(self, model_id, image_path, target_layer="fc_1/BiasAdd", is_similarity=True, n_sim=8):
         last_acvivation = tf.identity
         vecs, cate, image_path_list = self.inference(model_id, image_path, target_layer, last_acvivation)
-        c = cate.tolist()
         v = vecs.tolist()
         res = [
             {
@@ -94,6 +94,26 @@ class CNN(Model):
             return [(x,y) for x, y in zip(ids, dist)]
         else:
             return ids
+
+    def _dim_reduct(self, vecs):
+        vecs_2d = bhtsne.tsne(vecs.astype(np.float64), dimensions=2, perplexity=5.0, theta=0.5, rand_seed=-1)
+        print("$$$$$$$$$$$$")
+        print(vecs_2d)
+        print("$$$$$$$$$$$$")
+        return vecs_2d
+
+
+    def dim_reduct(self, model_id, image_path, target_layer="fc_1/BiasAdd"):
+        last_acvivation = tf.identity
+        vecs, cate, image_path_list = self.inference(model_id, image_path, target_layer, last_acvivation)
+        vecs_2d = self._dim_reduct(vecs)
+        res = [
+            {
+                "image_name": p.name,
+                "vector": vecs_2d[i].tolist(),
+            } for i, p in enumerate(image_path_list)]
+        return res
+
 
 
     def inference(self, model_id, image_path, target_layer, last_acvivation):

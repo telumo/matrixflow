@@ -289,6 +289,9 @@ def handler(wsock, message):
                     elif inference_type == "vectorization":
                         inference_res = model.vectorize(model_id, image_path, is_similarity=True)
                         action = "finishVectorization"
+                    elif inference_type == "dimRed":
+                        inference_res = model.dim_reduct(model_id, image_path)
+                        action = "finishDimRed"
                     res = fm.get_inferece_images(image_path)
                     image_list = res["list"]
                     res_list = []
@@ -318,7 +321,7 @@ def handler(wsock, message):
             if inference_type == "classification":
                 inference_res = model.classify(model_id, file_path)
                 action = "finishClassfication"
-            if inference_type == "vectorization":
+            elif inference_type == "vectorization":
                 inference_res = model.vectorize(model_id, file_path, is_similarity=False)
                 action = "finishVectorization"
             inference_res[0]["image_name"] = file_name

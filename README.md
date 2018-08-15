@@ -1,5 +1,19 @@
 # MatrixFlow
-Deep Learning Framework for Non-Engineers.
+AI Framework for Non-Engineers and Engineers.
+
+MatrixFlow allows you to be able to do data science and analysis without programming.
+
+
+You can do the following easily by only Drag and Drop on web browsers.
+
+Machine learning, Deep Learning, Natural Language Processing and Preprocessing.
+
+
+
+MatrixFlow also makes it easy to manage learned models and input data and integrate with applications.
+
+MatrixFlow is useful on all field, Business, Education and Science.
+
 
 
 ## Demo  

@@ -92,12 +92,24 @@ class Model:
             h = tf.nn.bias_add(tf.matmul(input, W), b)
         return self.activation(h, act)
 
-    def loss(self, output, y):
+    def loss(self, y_1, y_2):
+        if "input-labels" in y_1.name:
+            labels = y_1
+            logits = y_2
+        else:
+            labels = y_2
+            logits = y_1
         with tf.name_scope("loss"):
             self.loss = tf.reduce_mean(
-                tf.nn.softmax_cross_entropy_with_logits_v2(labels=y, logits=output))
+                tf.nn.softmax_cross_entropy_with_logits_v2(labels=labels, logits=logits))
 
-    def acc(self, output, y):
+    def acc(self, y_1, y_2):
+        if "input-labels" in y_1.name:
+            labels = y_1
+            logits = y_2
+        else:
+            labels = y_2
+            logits = y_1
         with tf.name_scope("accuracy"):
-            correct = tf.equal(tf.argmax(output, 1), tf.argmax(y, 1))
+            correct = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1))
             self.accuracy = tf.reduce_mean(tf.cast(correct, tf.float32))

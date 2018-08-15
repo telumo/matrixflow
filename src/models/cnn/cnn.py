@@ -15,7 +15,6 @@ import scipy.spatial
 from scipy.spatial import distance
 
 import filemanager as fma
-from filemanager import put_model_info
 from ..recipe import Model
 from ..recipemanager import Manager as RecipeManager
 from ..imagemanager import Manager as ImageManager
@@ -230,7 +229,7 @@ class CNN(Model):
                     for k, v in self.ima.mapping_dic.items():
                         mapping_list[int(v)] = k
                     model_info["mapping"] = mapping_list
-                    r = put_model_info(model_info, self.id)
+                    r = fma.put_model_info(model_info, self.id)
                     print(r)
 
                 global_step = tf.Variable(0, name="global_step", trainable=False)

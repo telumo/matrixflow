@@ -200,7 +200,7 @@
             <b-row class="mb-2">
               <b-col v-for="i in row.item.images">
                 <b-row><b-col class="text-center nowrap">${i.name}</b-col></b-row>
-                <b-row><b-col class="text-center"><img :src="i.body" width="90%" height="90%"></b-col></b-row>
+                <b-row><b-col class="text-center"><img :src="'data:image/png;base64,'+ i.body" width="90%" height="90%"></b-col></b-row>
                 <b-row><b-col class="text-center"><b>${i.label}</b></b-col></b-row>
               </b-col>
             </b-row>

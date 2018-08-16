@@ -1249,9 +1249,6 @@ window.onload = function() {
             console.log(this.learningData);
           }else if(res["action"] == "getData") {
             const index = this.getTargetIndex(this.learningData, res.dataId);
-            res.list.forEach(v=>{
-              v.body = "data:image/png;base64,"+ v.body
-            });
             const images = res.list;
             this.learningData[index].images = images;
 

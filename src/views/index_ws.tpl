@@ -162,8 +162,9 @@
               </b-col>
             </b-row>
             <b-row class="mb-2">
-              <b-col sm="3" class="text-sm-right"><b>${$t("data.nImages")}:</b></b-col>
-              <b-col>${ row.item.nImages }</b-col>
+              <b-col sm="3" class="text-sm-right"><b>${$t("data.num")}:</b></b-col>
+              <b-col v-if="row.item.nImages > 0">${ row.item.nImages }</b-col>
+              <b-col v-if="row.item.nTexts > 0">${ row.item.nTexts }</b-col>
             </b-row>
             <b-row class="mb-2">
               <b-col sm="3" class="text-sm-right"><b>${$t("data.nLabels")}:</b></b-col>

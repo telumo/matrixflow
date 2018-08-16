@@ -261,6 +261,7 @@ def handler(wsock, message):
                 uploading_file = d["uploading_file"]
                 file_id = fm.generate_id()
                 result = fm.put_zip_file(uploading_file, file_id, is_expanding=True)
+                print(result)
                 info = fm.get_data_statistics(file_id)
                 info["name"] = d["name"]
                 info["description"] = d["description"]

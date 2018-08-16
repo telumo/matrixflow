@@ -28,6 +28,7 @@ def test_put_data_info():
 
     expected = {
         'id': file_id,
+        'nTexts': 0,
         'nImages': 0,
         'nLabels': 0,
         'nClasses': 0,
@@ -54,6 +55,7 @@ def test_get_data_info_1():
     info_path = path / "info" / "info.json"
     expected = {
         'id': file_id,
+        'nTexts': 0,
         'nImages': 0,
         'nLabels': 0,
         'nClasses': 0,
@@ -74,6 +76,7 @@ def test_get_data_info_2():
 
     expected = {
         'id': 'test001',
+        'nTexts': 0,
         'nImages': 4,
         'nLabels': 4,
         'nClasses': 3,
@@ -99,6 +102,7 @@ def test_get_data_info_4():
     res = fm.get_data_info(path)
     expected = {
         'id': 'no_info',
+        'nTexts': 0,
         'nImages': 4,
         'nLabels': 4,
         'nClasses': 0,
@@ -123,6 +127,7 @@ def test_update_data_info():
     info_path = data_path / "info" / "info.json"
     expected = {
         'id': file_id,
+        'nTexts': 0,
         'nImages': 0,
         'nLabels': 0,
         'nClasses': 0,
@@ -251,6 +256,7 @@ def test_get_data_list():
         'list': [
             {
                 'id': 'test001',
+                'nTexts': 0,
                 'nImages': 4,
                 'nLabels': 4,
                 'nClasses': 3,
@@ -262,6 +268,7 @@ def test_get_data_list():
             },
             {
                 'id': 'no_info',
+                'nTexts': 0,
                 'nImages': 4,
                 'nLabels': 4,
                 'nClasses': 0,

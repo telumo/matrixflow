@@ -100,13 +100,16 @@ def put_zip_file(file, file_id, is_expanding=False):
             try:
                 zf.extractall(tmp)
 
-                image_dir =tmp.glob("*/images")
-                d =  next(image_dir)
-                os.rename(d, p / "images")
-
-                l_dir =tmp.glob("*/labels")
-                d =  next(l_dir)
-                os.rename(d, p / "labels")
+                for type in ["images", "texts", "labels"]:
+                    g = "*/"+type
+                    image_dir =tmp.glob(g)
+                    l =  list(image_dir)
+                    if len(l) > 0:
+                        d = l[0]
+                        print("#$###")
+                        print(d)
+                        print("#$###")
+                        os.rename(d, p / type)
                 shutil.rmtree(tmp)
 
             except Exception as e:
@@ -144,6 +147,11 @@ def get_data(data_id, offset, limit):
     images_path = p / "images"
     labels_path = p / "labels" / "labels.csv"
     images = get_images(images_path)
+
+    if len(images):
+        texts_path = p / "texts"
+        ext = "txt"
+        texts = list(texts_path.glob("*."+ext))
 
     if (limit - offset) > len(images) or offset > len(images):
         res = {
@@ -185,12 +193,17 @@ def get_data_info(path):
         return {}
 
     images = path / "images"
+    texts_path = path / "texts"
     labels = path / "labels" / "labels.csv"
     info = path / "info" / "info.json"
     id = path.name
     n_images = 0
     for ext in allow_file:
         n_images += len(list(images.glob("*."+ext)))
+
+    ext = "txt"
+    n_texts = len(list(texts_path.glob("*."+ext)))
+
     if info.exists():
         with open(info, "r") as f:
             body = json.load(f)
@@ -208,6 +221,7 @@ def get_data_info(path):
     create_time = get_create_time(path)
     data = {
         "id": id,
+        "nTexts": n_texts,
         "nImages": n_images,
         "nLabels": n_labels,
         "nClasses": body.get("nClasses", 0),

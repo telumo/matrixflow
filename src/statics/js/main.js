@@ -17,7 +17,7 @@ window.onload = function() {
 
 
 
-  axios.get("statics/i18n/main.json")
+  axios.get("statics/json/i18n.json")
     .then((res) => {
 
   var localSettings = getLocalSettings();

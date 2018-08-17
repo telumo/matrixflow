@@ -4,7 +4,6 @@ import inspect
 from collections import defaultdict
 import datetime
 from pathlib import Path
-import networkx as nx
 import tensorflow as tf
 from tqdm import tqdm
 import numpy as np
@@ -31,25 +30,9 @@ class CNN(Model):
         self.recipe_id = recipe_id
         self.recipe = self.rma.load_recipe(recipe_path=recipe_id)
         self.methods = dict(inspect.getmembers(self, inspect.ismethod))
-        self.edge_dict = defaultdict(list)
         self.id = None
         self.model_dir = fma.model_dir
         self.out_dir = None
-
-    def _change_edge_sources(self, layer_id, output):
-        for target, source_list in self.edge_dict.items():
-            if layer_id in source_list:
-                self.edge_dict[target].remove(layer_id)
-                self.edge_dict[target].append(output)
-
-    def _generate_edge_dict(self):
-        edges = self.recipe["edges"]
-        for e in edges:
-            source = e["sourceId"]
-            target = e["targetId"]
-            self.edge_dict[target].append(source)
-        print('"target":["source"]')
-        print(self.edge_dict)
 
 
     def classify(self, model_id, image_path, target_layer="fc_1/BiasAdd"):
@@ -96,9 +79,6 @@ class CNN(Model):
 
     def _dim_reduct(self, vecs):
         vecs_2d = bhtsne.tsne(vecs.astype(np.float64), dimensions=2, perplexity=5.0, theta=0.5, rand_seed=-1)
-        print("$$$$$$$$$$$$")
-        print(vecs_2d)
-        print("$$$$$$$$$$$$")
         return vecs_2d
 
 
@@ -143,14 +123,7 @@ class CNN(Model):
         return vecs, cate, image_path_list
 
     def build_nn(self):
-        self._generate_edge_dict()
-        layers = self.recipe["layers"]
-        edges = self.recipe["edges"]
-        ed = [(e["sourceId"], e["targetId"]) for e in edges]
-        G = nx.DiGraph()
-        G.add_edges_from(ed)
-        sorted_edges = list(nx.topological_sort(G))
-        layers_dict = {layer["id"]: layer for layer in layers}
+        sorted_edges, layers_dict = self.rma.sort_layers()
 
         for layer_id in sorted_edges:
             layer = layers_dict[layer_id]
@@ -167,19 +140,19 @@ class CNN(Model):
                 else:
                     x_shape = [None, params["dataWidth"], params["dataHeight"], params["channel"]]
                 self.x = self.methods[name](x_shape)
-                self._change_edge_sources(id, self.x)
+                self.rma.change_edge_sources(id, self.x)
             elif name == "inputLabels":
                 name = "input_labels"
                 y_shape = [None, params["nClass"]]
                 self.y = self.methods[name](y_shape)
-                self._change_edge_sources(id, self.y)
+                self.rma.change_edge_sources(id, self.y)
             elif name == "loss" or name == "acc":
-                sources = self.edge_dict[id]
+                sources = self.rma.edge_dict[id]
                 arg = sources
                 h = self.methods[name](*arg)
-                self._change_edge_sources(id, h)
+                self.rma.change_edge_sources(id, h)
             else:
-                sources = self.edge_dict[id]
+                sources = self.rma.edge_dict[id]
                 h = sources[0]
                 if name == "reshape":
                     arg = [h, params["shape"]]
@@ -192,7 +165,7 @@ class CNN(Model):
                 elif name == "fc":
                     arg = [h, params["outSize"], params["act"]]
                 h = self.methods[name](*arg)
-                self._change_edge_sources(id, h)
+                self.rma.change_edge_sources(id, h)
 
 
         #self.x, self.y = self.methods["input"](x_shape, y_shape)

@@ -1,0 +1,56 @@
+[
+ {
+   "name": "inputData",
+   "type": "input",
+   "params": {
+     "dataWidth": 28,
+     "dataHeight": 28,
+       "channel": 0
+   },
+   "graph": {}
+ },
+ {
+   "name": "inputLabels",
+   "type": "input",
+   "params": {
+     "nClass": 10
+   },
+   "graph": {}
+ },
+ {
+   "name": "conv2d",
+   "type": "layer",
+   "params": {
+     "act": "relu",
+     "outSize": 32
+   },
+   "graph": {}
+ },
+ {
+   "name": "max_pool",
+   "type": "layer",
+   "graph": {}
+ },
+ {
+   "name": "fc",
+   "type": "layer",
+   "params": {
+     "act": "ident",
+     "outSize": 10
+   },
+   "graph": {}
+ },
+ {
+   "name": "flatten",
+   "type": "layer",
+   "graph": {}
+ },
+ {
+   "name": "reshape",
+   "type": "layer",
+   "params": {
+     "shape": [ -1, 28, 28, 1]
+   },
+   "graph": {}
+ }
+]

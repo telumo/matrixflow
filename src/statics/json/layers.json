@@ -1,50 +1,69 @@
 [
+  {
+    "name": "acc",
+    "type": "layer",
+    "params": {},
+    "graph": {}
+  },
+  {
+    "name": "loss",
+    "type": "layer",
+    "params": {},
+    "graph": {}
+  },
+
  {
    "name": "inputData",
    "type": "input",
    "params": {
-     "dataWidth": 28,
-     "dataHeight": 28,
-       "channel": 0
+     "dataWidth": {"value": 28, "type": "number"},
+     "dataHeight": {"value": 28, "type": "number"},
+     "channel": {"value": 0, "type": "number"}
    },
    "graph": {}
  },
+
  {
    "name": "inputLabels",
    "type": "input",
    "params": {
-     "nClass": 10
+     "nClass": {"value": 10, "type": "number"}
    },
    "graph": {}
  },
+
  {
    "name": "conv2d",
    "type": "layer",
    "params": {
      "act": "relu",
-     "outSize": 32
+     "outSize": {"value": 32, "type": "number"}
    },
    "graph": {}
  },
+
  {
    "name": "max_pool",
    "type": "layer",
    "graph": {}
  },
+
  {
    "name": "fc",
    "type": "layer",
    "params": {
      "act": "ident",
-     "outSize": 10
+     "outSize": {"value": 10, "type": "number"}
    },
    "graph": {}
  },
+
  {
    "name": "flatten",
    "type": "layer",
    "graph": {}
  },
+
  {
    "name": "reshape",
    "type": "layer",

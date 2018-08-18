@@ -1,7 +1,6 @@
 import os
 import json
 import inspect
-from collections import defaultdict
 import datetime
 from pathlib import Path
 import tensorflow as tf
@@ -135,15 +134,15 @@ class CNN(Model):
 
             if name == "inputData":
                 name = "input_data"
-                if int(params.get("channel", 0)) == 0:
-                    x_shape = [None, params["dataWidth"], params["dataHeight"]]
+                if params["channel"]["value"] == 0:
+                    x_shape = [None, params["dataWidth"]["value"], params["dataHeight"]["value"]]
                 else:
-                    x_shape = [None, params["dataWidth"], params["dataHeight"], params["channel"]]
+                    x_shape = [None, params["dataWidth"]["value"], params["dataHeight"]["value"], params["channel"]["value"]]
                 self.x = self.methods[name](x_shape)
                 self.rma.change_edge_sources(id, self.x)
             elif name == "inputLabels":
                 name = "input_labels"
-                y_shape = [None, params["nClass"]]
+                y_shape = [None, params["nClass"]["value"]]
                 self.y = self.methods[name](y_shape)
                 self.rma.change_edge_sources(id, self.y)
             elif name == "loss" or name == "acc":
@@ -157,13 +156,13 @@ class CNN(Model):
                 if name == "reshape":
                     arg = [h, params["shape"]]
                 elif name == "conv2d":
-                    arg = [h, params["outSize"]]
+                    arg = [h, params["outSize"]["value"]]
                 elif name == "max_pool":
                     arg = [h]
                 elif name == "flatten":
                     arg = [h]
                 elif name == "fc":
-                    arg = [h, params["outSize"], params["act"]]
+                    arg = [h, params["outSize"]["value"], params["act"]]
                 h = self.methods[name](*arg)
                 self.rma.change_edge_sources(id, h)
 

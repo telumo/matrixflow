@@ -245,8 +245,9 @@
         <h2>${$t("tab.menu.recipe")}</h2>
         <div>
           <b-btn v-b-toggle.recipe-add variant="secondary">${showAddRecipe? $t("button.close"):$t("button.add")}</b-btn>
+
           <b-collapse id="recipe-add" class="mt-2" v-model="showAddRecipe">
-            <b-card>
+            <b-card v-if="newRecipe && newRecipe.info">
               <b-row class="mb-2">
                 <b-col sm="3" class="text-sm-right"><b>${$t("table.name")}:</b></b-col>
                 <b-col>
@@ -309,7 +310,11 @@
                           ${k} :
                         </b-col>
                         <b-col class="text-sm-left" v-if="k != 'shape'">
-                          <b-form-input v-model="newRecipe.tappedLayer.data().params[k]" type="number" size="sm"></b-form-input>
+                          <b-form-input
+                            v-model="newRecipe.tappedLayer.data().params[k].value"
+                            :type="newRecipe.tappedLayer.data().params[k].type"
+                            size="sm">
+                          </b-form-input>
                         </b-col>
                         <b-col class="text-sm-left" v-else>
                           ${p}
@@ -348,6 +353,7 @@
               </b-row>
             </b-card>
           </b-collapse>
+
         </div>
         <b-table :items="recipes" :fields="recipeFields" :sort-by.sync="dataSortBy" :sort-desc.sync="dataSortDesc" hover>
 

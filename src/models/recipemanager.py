@@ -15,6 +15,13 @@ class Manager:
         print(path)
         with open(path, "rb") as f:
             self.recipe = json.load(f)
+
+        for layer in self.recipe["layers"]:
+            if "params" in layer:
+                for k, v in layer["params"].items():
+                    print(v)
+                    if isinstance(v, dict) and v.get("type") == "number":
+                        v["value"] = int(v["value"])
         return self.recipe
 
     def change_edge_sources(self, layer_id, output):

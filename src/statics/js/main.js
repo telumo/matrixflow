@@ -139,6 +139,7 @@ window.onload = function() {
         axios.get("statics/json/layers.json")
           .then(res => {
             this.recipeLayers = res.data;
+            this.initNewRecipe()
           })
           .catch(err => {
             console.log(err);
@@ -247,6 +248,20 @@ window.onload = function() {
       },
       initNewRecipe: function(){
         console.log("init newRecipe");
+        const layers_info = {
+          inputData: {id: 0, position: {x: 150, y: 100}},
+          loss: {id:1, position: {x: 250, y: 200}},
+          acc: {id:2, position: {x: 350, y: 200}}
+        };
+        const layers = [];
+        this.recipeLayers.forEach(v=>{
+          if(layers_info[v.name]){
+            const l = Object.assign({}, v);
+            l.graph.position = layers_info[v.name].position;
+            l.id = layers_info[v.name].id;
+            layers.push(l);
+          }
+        });
         this.newRecipe = {
           tappedLayer: this.createEmptyLayer(),
           info: {
@@ -254,33 +269,7 @@ window.onload = function() {
             description: "",
             graph: {}
           },
-          layers: [
-            {
-              id: 0,
-              name: "inputData",
-              params: {
-                "dataWidth": 28,
-                "dataHeight": 28,
-                "channel": 0
-              },
-              graph:{
-                position: {x: 150, y: 100}
-              }
-            },
-            { id: 1,
-              name: "loss",
-              graph: {
-                position: {x: 250, y: 200}
-              }
-            },
-            {
-              id: 2,
-              name: "acc",
-              graph: {
-                position: {x: 350, y: 200}
-              }
-            }
-          ],
+          layers: layers,
           edges: [],
           train: {}
         };
@@ -1134,7 +1123,6 @@ window.onload = function() {
     },
     created: function(){
       this.initRecipeLayers();
-      this.initNewRecipe()
     },
     mounted: function (){
       this.setDataFields();

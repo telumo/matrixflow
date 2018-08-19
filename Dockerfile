@@ -1,6 +1,6 @@
 FROM python:3.6
 
-LABEL maintainer "Hikaru Hasegawa<drumscohika@gmail.com>"
+LABEL maintainer "telumo<drumscohika@gmail.com>"
 
 RUN apt-get update && \
     apt-get install git -y && \
